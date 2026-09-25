@@ -5,7 +5,6 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
-      "ravitemer/mcphub.nvim",
     },
     opts = {
       adapters = {
@@ -38,16 +37,6 @@ return {
           adapter = {
             name = "gemini",
             model = "gemini-3.8-flash",
-          },
-        },
-      },
-      extensions = {
-        mcphub = {
-          callback = "mcphub.extensions.codecompanion",
-          opts = {
-            make_vars = true,
-            make_slash_commands = true,
-            show_result_in_chat = true,
           },
         },
       },
@@ -101,18 +90,6 @@ return {
     end,
   },
   {
-    "ravitemer/mcphub.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    build = "bundled_build.lua",
-    config = function()
-      require("mcphub").setup({
-        use_bundled_binary = true,
-      })
-    end,
-  },
-  {
     "MeanderingProgrammer/render-markdown.nvim",
     ft = { "markdown", "codecompanion" },
   },
@@ -129,39 +106,3 @@ return {
     },
   },
 }
-
--- -- MCP Hub extension for CodeCompanion
---
--- -- Markdown rendering in CodeCompanion buffers
--- {
---   "MeanderingProgrammer/render-markdown.nvim",
---   ft = { "markdown", "codecompanion" },
--- },
---
--- -- Paste images into CodeCompanion chat
--- {
---   "HakonHarnes/img-clip.nvim",
---   opts = {
---     filetypes = {
---       codecompanion = {
---         prompt_for_file_name = false,
---         template = "[Image]($FILE_PATH)",
---         use_absolute_path = true,
---       },
---     },
---   },
--- },
---
--- -- Completion integration for blink.cmp
--- {
---   "saghen/blink.cmp",
---   optional = true,
---   opts = {
---     sources = {
---       per_filetype = {
---         codecompanion = { "codecompanion" },
---       },
---     },
---   },
--- },
--- }

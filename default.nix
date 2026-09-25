@@ -157,10 +157,6 @@ let
       path = vp.markdown-preview-nvim;
     }
     {
-      name = "mcphub.nvim";
-      path = vp.mcphub-nvim;
-    }
-    {
       name = "mini.ai";
       path = vp.mini-nvim;
     }
