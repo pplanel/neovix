@@ -20,36 +20,42 @@ return {
   {
     "mrcjkb/rustaceanvim",
     version = "^6",
+    ft = { "rust" },
     opts = {
-      default_settings = {
-        ["rust-analyzer"] = {
-          files = {
-            exclude = {
-              ".direnv",
-              ".git",
-              ".jj",
-              ".github",
-              ".gitlab",
-              "bin",
-              "node_modules",
-              "target",
-              "venv",
-              ".venv",
-              "vendor",
+      server = {
+        default_settings = {
+          ["rust-analyzer"] = {
+            files = {
+              exclude = {
+                ".direnv",
+                ".git",
+                ".jj",
+                ".github",
+                ".gitlab",
+                "bin",
+                "node_modules",
+                "target",
+                "venv",
+                ".venv",
+                "vendor",
+              },
+              watcher = "client",
             },
-            watcher = "client",
+            -- Add clippy lints for Rust if using rust-analyzer
+            checkOnSave = true,
+            -- Enable diagnostics if using rust-analyzer
+            diagnostics = {
+              enable = true,
+            },
+            procMacro = {
+              enable = true,
+            },
           },
-        },
-        -- Add clippy lints for Rust if using rust-analyzer
-        checkOnSave = true,
-        -- Enable diagnostics if using rust-analyzer
-        diagnostics = {
-          enable = true,
-        },
-        procMacro = {
-          enable = true,
         },
       },
     },
+    config = function(_, opts)
+      vim.g.rustaceanvim = vim.tbl_deep_extend("force", vim.g.rustaceanvim or {}, opts or {})
+    end,
   },
 }

@@ -6,6 +6,9 @@ if not vim.loop.fs_stat(lazypath) then
   -- stylua: ignore
   vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
 end
+if vim.env.NEOVIM_CONFIG and not vim.g.lazyvim_json then
+  vim.g.lazyvim_json = vim.env.NEOVIM_CONFIG .. "/lazyvim.json"
+end
 vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
 local lazy_opts = {
