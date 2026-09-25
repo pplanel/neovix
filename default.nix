@@ -5,6 +5,14 @@
 }:
 
 let
+  jsDebugAdapter = pkgs.writeShellScriptBin "js-debug-adapter" ''
+    exec ${pkgs.vscode-js-debug}/bin/js-debug "$@"
+  '';
+
+  terraformBin = pkgs.writeShellScriptBin "terraform" ''
+    exec ${pkgs.opentofu}/bin/tofu "$@"
+  '';
+
   extraPackages = with pkgs; [
     # Nix toolchain
     nil
@@ -63,6 +71,29 @@ let
     nodejs_22
     curl
     git
+
+    # DAP Adapters
+    jsDebugAdapter
+
+    # System & Clipboard Utilities
+    pngpaste
+    ast-grep
+
+    # Formatters (conform.nvim)
+    prettier
+    terraformBin
+    opentofu
+    fish
+    packer
+
+    # Terminal Image Viewers & Media Previewers (fzf-lua, snacks)
+    chafa
+    viu
+    ueberzugpp
+    imagemagick
+    ghostscript
+    tectonic
+    mermaid-cli
   ];
 
   vp = pkgs.vimPlugins;
@@ -325,6 +356,7 @@ let
 in
 pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped {
   luaRcContent = luaInit;
+  extraLuaPackages = ps: [ ps.jsregexp ];
   wrapperArgs = [
     "--prefix"
     "PATH"
