@@ -309,6 +309,8 @@ let
     local lazy_plugins = "${lazyPlugins}"
 
     vim.env.LAZY_PLUGINS = lazy_plugins
+    vim.env.NEOVIM_CONFIG = config_dir
+    package.path = config_dir .. "/lua/?.lua;" .. config_dir .. "/lua/?/init.lua;" .. package.path
     local user_config = vim.fn.expand("~/.config/nvim")
     vim.opt.runtimepath:remove(user_config)
     vim.opt.runtimepath:remove(user_config .. "/after")

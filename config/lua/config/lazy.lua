@@ -24,6 +24,8 @@ local lazy_opts = {
   checker = { enabled = false }, -- disable update checker when packaged via Nix
   performance = {
     rtp = {
+      reset = false,
+      paths = vim.env.NEOVIM_CONFIG and { vim.env.NEOVIM_CONFIG } or {},
       disabled_plugins = {
         "gzip",
         "tarPlugin",
