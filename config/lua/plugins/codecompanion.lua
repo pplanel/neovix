@@ -75,14 +75,19 @@ return {
       },
     },
     keys = {
-      { "<C-a>", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
+      { "<leader>o", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
       {
-        "<LocalLeader>a",
+        "<leader>a",
         "<cmd>CodeCompanionChat Toggle<cr>",
         mode = { "n", "v" },
         desc = "CodeCompanion Chat Toggle",
       },
-      { "ga", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion Add Selection to Chat" },
+      {
+        "ga",
+        "<cmd>CodeCompanionChat Add<cr>",
+        mode = "v",
+        desc = "CodeCompanion Add Selection to Chat",
+      },
     },
     init = function()
       -- Expand 'cc' into 'CodeCompanion' in the command line

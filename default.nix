@@ -2,9 +2,7 @@
   pkgs,
   lib ? pkgs.lib,
   ...
-}:
-
-let
+}: let
   jsDebugAdapter = pkgs.writeShellScriptBin "js-debug-adapter" ''
     exec ${pkgs.vscode-js-debug}/bin/js-debug "$@"
   '';
@@ -13,7 +11,41 @@ let
     exec ${pkgs.opentofu}/bin/tofu "$@"
   '';
 
+  treesitterLanguages = [
+    "c"
+    "lua"
+    "bash"
+    "json"
+    "rust"
+    "html"
+    "yaml"
+    "toml"
+    "markdown"
+    "nix"
+    "javascript"
+    "typescript"
+  ];
+
+  treesitterGrammars = pkgs.vimPlugins.nvim-treesitter.withPlugins (
+    p:
+      lib.concatMap (
+        lang: let
+          attrName = "tree-sitter-${lang}";
+          grammar = p.${attrName} or null;
+        in
+          if grammar != null
+          then [grammar]
+          else lib.warn "treesitter grammar for '${lang}' not found" []
+      )
+      treesitterLanguages
+  );
+
   extraPackages = with pkgs; [
+    # Lua toolchain
+    lua5_1
+    luarocks
+    lua-language-server
+
     # Nix toolchain
     nil
     nixd
@@ -61,7 +93,6 @@ let
     markdownlint-cli2
     taplo
     stylua
-    tree-sitter
 
     # Zig & Swift
     zls
@@ -354,13 +385,14 @@ let
     dofile(config_dir .. "/init.lua")
   '';
 in
-pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped {
-  luaRcContent = luaInit;
-  extraLuaPackages = ps: [ ps.jsregexp ];
-  wrapperArgs = [
-    "--prefix"
-    "PATH"
-    ":"
-    (lib.makeBinPath extraPackages)
-  ];
-}
+  pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped {
+    luaRcContent = luaInit;
+    extraLuaPackages = ps: [ps.jsregexp];
+    plugins = [treesitterGrammars];
+    wrapperArgs = [
+      "--prefix"
+      "PATH"
+      ":"
+      (lib.makeBinPath extraPackages)
+    ];
+  }
