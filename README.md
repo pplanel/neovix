@@ -1,4 +1,14 @@
-# neovix
+<p align="center">
+  <img src="docs/assets/logo.png" alt="neovix logo" width="160">
+</p>
+
+<h1 align="center">neovix</h1>
+
+<p align="center">
+  <em>Neovim, fully built by Nix: plugins, parsers and toolchains included.</em>
+</p>
+
+---
 
 A pure, Nix-managed Neovim distribution. Every plugin, treesitter parser,
 language server, formatter, linter and debug adapter comes from the Nix store:
@@ -6,8 +16,8 @@ no plugin manager, no Mason, no runtime downloads, no lockfile other than
 `flake.lock`.
 
 ```bash
-nix run github:<you>/neovix          # try it
-nix run .                            # from a checkout
+nix run github:pplanel/neovix    # try it
+nix run .                        # from a checkout
 ```
 
 - **Native packages**: plugins are installed into Neovim's `packpath` by
@@ -132,7 +142,7 @@ The simplest way is to use the package directly. It is built with neovix's
 own pinned nixpkgs:
 
 ```nix
-# inputs.neovix.url = "github:<you>/neovix";
+# inputs.neovix.url = "github:pplanel/neovix";
 environment.systemPackages = [ inputs.neovix.packages.${pkgs.system}.default ];
 ```
 
