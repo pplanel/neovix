@@ -388,7 +388,7 @@ in
   pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped {
     luaRcContent = luaInit;
     extraLuaPackages = ps: [ps.jsregexp];
-    plugins = [treesitterGrammars];
+    plugins = [treesitterGrammars lazyPlugins];
     wrapperArgs = [
       "--prefix"
       "PATH"

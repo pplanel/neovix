@@ -2,6 +2,8 @@
 
 A fully reproducible, hermetic Neovim flake and overlay packaging LazyVim, all plugins, and 37+ language servers, formatters, linters, and debuggers directly from the Nix store.
 
+asdasd
+
 ---
 
 ## 🌟 Key Highlights
@@ -44,17 +46,21 @@ A fully reproducible, hermetic Neovim flake and overlay packaging LazyVim, all p
 ## 🔨 Building & Running
 
 ### Build the package
+
 ```bash
 nix build .#neovim
 ```
+
 This generates `./result/bin/nvim`.
 
 ### Run directly via Flake
+
 ```bash
 nix run .#neovim
 ```
 
 ### Enter a shell with this Neovim
+
 ```bash
 nix develop
 ```
@@ -69,15 +75,18 @@ nix develop
    Search with `nix search nixpkgs vimPlugins.<plugin-name>`.
 2. **Add to `default.nix`**:
    Add an entry under the `lazyPlugins = pkgs.linkFarm "lazy-plugins" [ ... ]` list:
+
    ```nix
    {
      name = "my-plugin.nvim";
      path = vp.my-plugin-nvim;
    }
    ```
-   *(Note: `name` must match the repo/folder name expected by Lazy, e.g. `foo.nvim`).*
+
+   _(Note: `name` must match the repo/folder name expected by Lazy, e.g. `foo.nvim`)._
 3. **Configure in Lua**:
    Create or edit `config/lua/plugins/my-plugin.lua`:
+
    ```lua
    return {
      {
@@ -88,7 +97,9 @@ nix develop
      },
    }
    ```
+
 4. **Rebuild**:
+
    ```bash
    git add .
    nix build .#neovim
@@ -100,11 +111,13 @@ nix develop
 
 - **To temporarily disable a plugin without removing it**:
   Add it to `config/lua/plugins/disabled.lua`:
+
   ```lua
   return {
     { "author/plugin-to-disable.nvim", enabled = false },
   }
   ```
+
 - **To permanently remove a plugin**:
   1. Remove its entry from `lazyPlugins` in `default.nix`.
   2. Remove its configuration file from `config/lua/plugins/`.
@@ -120,14 +133,17 @@ Because Mason is disabled, all binaries come from `extraPackages` in `default.ni
 
 1. **Add the package to `default.nix`**:
    Add the nixpkgs attribute to `extraPackages`:
+
    ```nix
    extraPackages = with pkgs; [
      # ...
      biome
    ];
    ```
+
 2. **Configure Neovim to use it**:
    - **For LSP**: In `config/lua/plugins/lsp.lua` or relevant lang extra:
+
      ```lua
      return {
        {
@@ -140,7 +156,9 @@ Because Mason is disabled, all binaries come from `extraPackages` in `default.ni
        },
      }
      ```
+
    - **For Formatters**: In `config/lua/plugins/conform.lua`:
+
      ```lua
      return {
        {
@@ -153,7 +171,9 @@ Because Mason is disabled, all binaries come from `extraPackages` in `default.ni
        },
      }
      ```
+
    - **For Linters**: In `config/lua/plugins/lint.lua`:
+
      ```lua
      return {
        {
@@ -166,7 +186,9 @@ Because Mason is disabled, all binaries come from `extraPackages` in `default.ni
        },
      }
      ```
+
 3. **Rebuild**:
+
    ```bash
    git add .
    nix build .#neovim
@@ -188,6 +210,7 @@ Because Mason is disabled, all binaries come from `extraPackages` in `default.ni
 Once you push this repository to GitHub or another Git host:
 
 1. **Add to your system `flake.nix` inputs**:
+
    ```nix
    inputs = {
      nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -200,6 +223,7 @@ Once you push this repository to GitHub or another Git host:
 
 2. **Add the overlay to `pkgs`**:
    In your nix-darwin or home-manager configuration:
+
    ```nix
    nixpkgs.overlays = [
      inputs.neovim-flake.overlays.default
@@ -208,6 +232,7 @@ Once you push this repository to GitHub or another Git host:
 
 3. **Install the package**:
    In `environment.systemPackages` or `home.packages`:
+
    ```nix
    environment.systemPackages = [
      pkgs.neovim # This will now be your custom wrapped Neovim!
