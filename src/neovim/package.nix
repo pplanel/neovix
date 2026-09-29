@@ -9,10 +9,13 @@
   # Plain `import` rather than callPackage: these return categorised attrsets
   # whose values are flattened below, so callPackage's `override` attrs must not
   # leak in.
-  plugins = import ./plugins.nix {inherit vimPlugins;};
+  plugins = import ./plugins.nix {
+    inherit lib vimPlugins;
+    inherit (pkgs) stdenv callPackage;
+  };
   toolchains = import ./toolchains.nix {
     inherit lib pkgs;
-    inherit (pkgs) stdenv callPackage writeShellScriptBin;
+    inherit (pkgs) stdenv callPackage runCommand writeShellScriptBin;
   };
   treesitter = import ./treesitter.nix {inherit vimPlugins;};
 

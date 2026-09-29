@@ -55,6 +55,8 @@ config/                      # the Neovim config (Lua)
 | `rust.lua`            | rustaceanvim, crates.nvim (bacon_ls is in `lsp.lua`)                                                    |
 | `completion.lua`      | blink.cmp, LuaSnip, friendly-snippets, lazydev                                                          |
 | `markdown.lua`        | `leaf` runner, render-markdown, markdown-preview                                                        |
+| `swift.lua`           | sourcekit-lsp, SwiftFormat / swift-format, SwiftLint, SwiftPM and xcodebuild.nvim — see [docs/swift.md](docs/swift.md) |
+| `vim_tmux_navigator.lua` | `<C-h/j/k/l>` across Neovim splits and tmux panes                                                  |
 | `ai.lua`              | CodeCompanion (Gemini 3.8 Flash, MCP servers, skills, rules), img-clip                                  |
 | `dap.lua`             | nvim-dap + dap-view / dap-ui, adapters for C/C++/Zig/Rust, Go, Python, JS/TS, Lua                       |
 | `testing.lua`         | neotest (Rust, Python, Zig)                                                                             |

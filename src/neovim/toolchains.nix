@@ -12,6 +12,7 @@
   stdenv,
   pkgs,
   callPackage,
+  runCommand,
   writeShellScriptBin,
 }: let
   wrappers = {
@@ -26,6 +27,12 @@
       exec ${pkgs.opentofu}/bin/tofu "$@"
     '';
   };
+
+  # Only coreutils' stdbuf: the full coreutils would shadow the BSD tools.
+  stdbufOnly = runCommand "stdbuf" {} ''
+    mkdir -p $out/bin
+    ln -s ${pkgs.coreutils}/bin/stdbuf $out/bin/stdbuf
+  '';
 in
   with pkgs; {
     core = [
@@ -101,7 +108,20 @@ in
 
     zig = [zls];
 
-    swift = [swiftformat];
+    # sourcekit-lsp, swift-format and lldb-dap are deliberately NOT bundled:
+    # they must match the compiler that builds the project (nixpkgs ships
+    # Swift 5.10; Xcode ships 6.x), so they come from the system toolchain
+    # (Xcode via xcrun on macOS, swiftly or distro packages on Linux).
+    swift =
+      [
+        swiftformat
+        swiftlint
+      ]
+      ++ lib.optionals stdenv.hostPlatform.isDarwin [
+        xcbeautify # readable xcodebuild logs (xcodebuild.nvim)
+        (callPackage ./pkgs/xcode-build-server.nix {}) # sourcekit-lsp for .xcodeproj
+        stdbufOnly # macOS app logs without the debugger (xcodebuild.nvim)
+      ];
 
     ai =
       [ast-grep]

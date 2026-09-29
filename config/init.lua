@@ -20,12 +20,14 @@ for _, name in ipairs({
   "plugins.theme",
   "plugins.ui",
   "plugins.editor",
+  "plugins.vim_tmux_navigator",
   "plugins.tree",
   "plugins.treesitter",
   "plugins.lsp",
   "plugins.format",
   "plugins.rust",
   "plugins.markdown",
+  "plugins.swift", -- after format: extends conform and nvim-lint
 }) do
   load(name)
 end

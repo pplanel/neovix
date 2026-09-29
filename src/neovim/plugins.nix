@@ -1,7 +1,12 @@
 # Every plugin is installed into Neovim's packpath (`pack/*/start`) by
 # wrapNeovimUnstable, so it is on the runtimepath at startup: no plugin
 # manager, no cloning, no lockfile. Configuration lives in config/lua/plugins/.
-{vimPlugins}:
+{
+  lib,
+  stdenv,
+  callPackage,
+  vimPlugins,
+}:
 with vimPlugins; {
   ui = [
     catppuccin-nvim
@@ -20,6 +25,7 @@ with vimPlugins; {
   editing = [
     flash-nvim
     persistence-nvim
+    vim-tmux-navigator
     gitsigns-nvim
     grug-far-nvim
     ts-comments-nvim
@@ -50,6 +56,12 @@ with vimPlugins; {
     render-markdown-nvim
     markdown-preview-nvim
     venv-selector-nvim
+  ];
+
+  # Swift's LSP comes from the system toolchain (see toolchains.nix); Xcode
+  # project tooling only exists on macOS.
+  swift = lib.optionals stdenv.hostPlatform.isDarwin [
+    (callPackage ./pkgs/xcodebuild-nvim.nix {})
   ];
 
   ai = [

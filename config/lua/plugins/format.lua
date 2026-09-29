@@ -19,7 +19,7 @@ require("conform").setup({
     tf = { "terraform_fmt" },
     ["terraform-vars"] = { "terraform_fmt" },
     hcl = { "packer_fmt" },
-    swift = { "swiftformat" },
+    -- swift: chosen per project in swift.lua
     javascript = web,
     javascriptreact = web,
     typescript = web,

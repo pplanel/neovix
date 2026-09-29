@@ -122,6 +122,7 @@ require("which-key").setup({
       { "<leader>u", group = "ui" },
       { "<leader>w", group = "windows", proxy = "<c-w>" },
       { "<leader>x", group = "diagnostics/quickfix" },
+      { "<leader>X", group = "swift/xcode" },
       { "[", group = "prev" },
       { "]", group = "next" },
       { "g", group = "goto" },

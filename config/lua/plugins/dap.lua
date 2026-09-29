@@ -1,5 +1,6 @@
--- Debug adapters are all Nix-provided: lldb-dap (C/C++/Zig; rustaceanvim picks
--- it up for Rust), delve, debugpy, js-debug-adapter, and osv for Neovim Lua.
+-- Debug adapters are Nix-provided: lldb-dap (C/C++/Zig; rustaceanvim picks it
+-- up for Rust), delve, debugpy, js-debug-adapter, and osv for Neovim Lua.
+-- Swift is the exception: it needs the system toolchain's lldb-dap.
 local dap = require("dap")
 local map = vim.keymap.set
 local icons = require("config.icons").dap
@@ -79,6 +80,34 @@ for _, ft in ipairs({ "javascript", "typescript", "javascriptreact", "typescript
     },
   }
 end
+
+-- Swift: must use the toolchain's lldb-dap (the Nix lldb has no Swift
+-- support). On macOS xcodebuild.nvim registers the iOS/macOS app config,
+-- which it always launches as configurations.swift[1], so SwiftPM goes after.
+local swift_lldb = vim.fn.has("mac") == 1 and { command = "xcrun", args = { "lldb-dap" } }
+  or { command = vim.fs.joinpath(vim.fs.dirname(vim.fn.exepath("swift")), "lldb-dap") }
+dap.adapters["lldb-swift"] = vim.tbl_extend("force", { type = "executable", name = "lldb-swift" }, swift_lldb)
+
+dap.configurations.swift = {}
+if package.loaded["xcodebuild"] then
+  require("xcodebuild.integrations.dap").setup()
+  -- stylua: ignore start
+  map("n", "<leader>XD", function() require("xcodebuild.integrations.dap").build_and_debug() end, { desc = "Build & Debug" })
+  map("n", "<leader>XB", function() require("xcodebuild.integrations.dap").debug_without_build() end, { desc = "Debug Without Building" })
+  map("n", "<leader>XN", function() require("xcodebuild.integrations.dap").debug_func_test() end, { desc = "Debug Nearest Test" })
+  -- stylua: ignore end
+end
+table.insert(dap.configurations.swift, {
+  type = "lldb-swift",
+  request = "launch",
+  name = "Launch SwiftPM executable",
+  program = function()
+    local root = vim.fs.root(0, "Package.swift") or vim.fn.getcwd()
+    return vim.fn.input("Executable: ", root .. "/.build/debug/", "file")
+  end,
+  cwd = "${workspaceFolder}",
+  stopOnEntry = false,
+})
 
 -- Neovim Lua (one-small-step-for-vimkind): start a server in the debuggee
 -- with <leader>daL, then attach from another instance.

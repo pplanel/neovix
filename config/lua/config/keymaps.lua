@@ -6,11 +6,7 @@ local map = vim.keymap.set
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true, desc = "Down" })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true, desc = "Up" })
 
--- Windows
-map("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window" })
-map("n", "<C-j>", "<C-w>j", { desc = "Go to Lower Window" })
-map("n", "<C-k>", "<C-w>k", { desc = "Go to Upper Window" })
-map("n", "<C-l>", "<C-w>l", { desc = "Go to Right Window" })
+-- Windows (<C-h/j/k/l> navigation lives in plugins/vim_tmux_navigator.lua)
 map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase Window Height" })
 map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease Window Height" })
 map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease Window Width" })
