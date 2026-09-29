@@ -22,6 +22,7 @@
     inherit packages;
     apps = import ./apps {inherit packages;};
     devShells = import ./devShells {inherit pkgs packages;};
+    checks = import ./checks {inherit pkgs packages;};
     formatter = pkgs.alejandra;
   };
 in
