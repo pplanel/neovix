@@ -1,76 +1,64 @@
--- ==========================================
--- 1. FULL BUFFER MODE (<leader>md)
--- ==========================================
-return {
-  {
-    "pplanel/leaf",
-    virtual = true,
-    keys = {
-      {
-        "<leader>md",
-        function()
-          local file = vim.fn.expand("%:p")
-          if file == "" or vim.bo.filetype ~= "markdown" then
-            vim.notify("Not a valid markdown file", vim.log.levels.WARN)
-            return
-          end
+local map = vim.keymap.set
 
-          -- Create a clean, blank buffer for the terminal
-          local term_buf = vim.api.nvim_create_buf(false, true)
+-- ── leaf: terminal markdown viewer ──────────────────────────────────────────
+-- `leaf` is resolved from your PATH (it is not bundled). <Esc> in the viewer
+-- closes it and drops back to editing.
+---@param opts { split: boolean, watch: boolean }
+local function leaf(opts)
+  local file = vim.fn.expand("%:p")
+  if file == "" or vim.bo.filetype ~= "markdown" then
+    vim.notify("Not a valid markdown file", vim.log.levels.WARN)
+    return
+  end
+  if vim.fn.executable("leaf") == 0 then
+    vim.notify("leaf is not on PATH", vim.log.levels.ERROR)
+    return
+  end
 
-          -- Swap the current window to use this clean buffer
-          vim.api.nvim_win_set_buf(0, term_buf)
+  if opts.split then vim.cmd("vsplit") end
 
-          -- Run leaf inside it using jobstart with term = true
-          vim.fn.jobstart("leaf " .. vim.fn.shellescape(file), {
-            term = true,
-            on_exit = function()
-              if vim.api.nvim_buf_is_valid(term_buf) then
-                vim.api.nvim_buf_delete(term_buf, { force = true })
-              end
-            end,
-          })
+  local term_buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_win_set_buf(0, term_buf)
 
-          vim.cmd("startinsert")
+  local cmd = { "leaf" }
+  if opts.watch then table.insert(cmd, "-w") end
+  table.insert(cmd, file)
 
-          -- Map ESC inside this specific full buffer to close it and drop back to editing
-          vim.keymap.set("t", "<Esc>", "<C-\\><C-n>:bd!<CR>", { buffer = term_buf, silent = true })
-        end,
-        desc = "Toggle Leaf Markdown Full",
-      },
-      {
-        "<leader>mds",
-        function()
-          local file = vim.fn.expand("%:p")
-          if file == "" or vim.bo.filetype ~= "markdown" then
-            vim.notify("Not a valid markdown file", vim.log.levels.WARN)
-            return
-          end
+  vim.fn.jobstart(cmd, {
+    term = true,
+    on_exit = function()
+      if vim.api.nvim_buf_is_valid(term_buf) then vim.api.nvim_buf_delete(term_buf, { force = true }) end
+    end,
+  })
 
-          -- Open the vertical split
-          vim.cmd("vsplit")
+  vim.cmd("startinsert")
+  map("t", "<Esc>", "<C-\\><C-n>:bd!<CR>", { buffer = term_buf, silent = true })
+end
 
-          -- Create a clean scratch buffer for the split
-          local term_buf = vim.api.nvim_create_buf(false, true)
-          vim.api.nvim_win_set_buf(0, term_buf)
+-- stylua: ignore start
+map("n", "<leader>md", function() leaf({ split = false, watch = false }) end, { desc = "Toggle Leaf Markdown Full" })
+map("n", "<leader>mds", function() leaf({ split = true, watch = true }) end, { desc = "Leaf Markdown Watch Split" })
+-- stylua: ignore end
 
-          -- Launch leaf with the watch flag (-w) using jobstart
-          vim.fn.jobstart("leaf -w " .. vim.fn.shellescape(file), {
-            term = true,
-            on_exit = function()
-              if vim.api.nvim_buf_is_valid(term_buf) then
-                vim.api.nvim_buf_delete(term_buf, { force = true })
-              end
-            end,
-          })
+-- ── render-markdown (in-buffer rendering, also for CodeCompanion chats) ────
+require("render-markdown").setup({
+  file_types = { "markdown", "codecompanion" },
+  code = { sign = false, width = "block", right_pad = 1 },
+  heading = { sign = false, icons = {} },
+  checkbox = { enabled = false },
+})
+Snacks.toggle({
+  name = "Render Markdown",
+  get = function() return require("render-markdown.api").get() end,
+  set = function(enabled) require("render-markdown.api").set(enabled) end,
+}):map("<leader>um")
 
-          vim.cmd("startinsert")
-
-          -- Map ESC inside the split buffer to close just the preview window
-          vim.keymap.set("t", "<Esc>", "<C-\\><C-n>:bd!<CR>", { buffer = term_buf, silent = true })
-        end,
-        desc = "Leaf Markdown Watch Split",
-      },
-    },
-  },
-}
+-- ── markdown-preview (browser) ──────────────────────────────────────────────
+vim.g.mkdp_filetypes = { "markdown" }
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("neovix_markdown_preview", { clear = true }),
+  pattern = "markdown",
+  callback = function(event)
+    map("n", "<leader>cp", "<cmd>MarkdownPreviewToggle<cr>", { buffer = event.buf, desc = "Markdown Preview" })
+  end,
+})
