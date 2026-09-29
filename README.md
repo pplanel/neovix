@@ -43,21 +43,21 @@ config/                      # the Neovim config (Lua)
   lua/plugins/               #   one file per area, see below
 ```
 
-| `config/lua/plugins/` | What it sets up |
-| --- | --- |
-| `theme.lua` | catppuccin (mocha / latte follows `background`) |
-| `ui.lua` | snacks (dashboard, picker, notifier, terminal…), which-key, lualine, bufferline, trouble, todo-comments |
-| `editor.lua` | mini.ai / surround / pairs, flash, persistence, gitsigns, grug-far, ts-comments |
-| `tree.lua` | neo-tree |
-| `treesitter.lua` | highlighting, folds, indent, textobjects, autotag |
-| `lsp.lua` | every language server (nixd, lua_ls, gopls, pyright, ruff, vtsls, …), venv-selector |
-| `format.lua` | conform (format on save) and nvim-lint |
-| `rust.lua` | rustaceanvim, crates.nvim (bacon_ls is in `lsp.lua`) |
-| `completion.lua` | blink.cmp, LuaSnip, friendly-snippets, lazydev |
-| `markdown.lua` | `leaf` runner, render-markdown, markdown-preview |
-| `ai.lua` | CodeCompanion (Gemini 3.8 Flash, MCP servers, skills, rules), img-clip |
-| `dap.lua` | nvim-dap + dap-view / dap-ui, adapters for C/C++/Zig/Rust, Go, Python, JS/TS, Lua |
-| `testing.lua` | neotest (Rust, Python, Zig) |
+| `config/lua/plugins/` | What it sets up                                                                                         |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| `theme.lua`           | catppuccin (mocha / latte follows `background`)                                                         |
+| `ui.lua`              | snacks (dashboard, picker, notifier, terminal…), which-key, lualine, bufferline, trouble, todo-comments |
+| `editor.lua`          | mini.ai / surround / pairs, flash, persistence, gitsigns, grug-far, ts-comments                         |
+| `tree.lua`            | neo-tree                                                                                                |
+| `treesitter.lua`      | highlighting, folds, indent, textobjects, autotag                                                       |
+| `lsp.lua`             | every language server (nixd, lua_ls, gopls, pyright, ruff, vtsls, …), venv-selector                     |
+| `format.lua`          | conform (format on save) and nvim-lint                                                                  |
+| `rust.lua`            | rustaceanvim, crates.nvim (bacon_ls is in `lsp.lua`)                                                    |
+| `completion.lua`      | blink.cmp, LuaSnip, friendly-snippets, lazydev                                                          |
+| `markdown.lua`        | `leaf` runner, render-markdown, markdown-preview                                                        |
+| `ai.lua`              | CodeCompanion (Gemini 3.8 Flash, MCP servers, skills, rules), img-clip                                  |
+| `dap.lua`             | nvim-dap + dap-view / dap-ui, adapters for C/C++/Zig/Rust, Go, Python, JS/TS, Lua                       |
+| `testing.lua`         | neotest (Rust, Python, Zig)                                                                             |
 
 ## How it boots
 
@@ -158,21 +158,21 @@ nixpkgs-unstable no longer supports `x86_64-darwin`.
 The leader is `<space>`. The layout follows LazyVim, so the usual keys work;
 `<leader>?` shows buffer-local maps and `<leader>sk` searches all of them.
 
-| Keys | Action |
-| --- | --- |
-| `<leader><space>` `<leader>ff` `<leader>/` `<leader>,` | smart find, files, grep, buffers |
-| `<leader>e` / `<leader>E` | neo-tree (git root / cwd) |
-| `gd` `gr` `gI` `gy` `K` | definition, references, implementations, type definition, hover |
-| `<leader>ca` `<leader>cr` `<leader>cf` | code action, rename, format |
-| `<leader>uf` / `<leader>uF` | toggle format on save (global / buffer) |
-| `s` / `S` | flash jump / flash treesitter |
-| `gsa` `gsd` `gsr` | surround add / delete / replace |
-| `]h` `[h` `<leader>gh…` | git hunks |
-| `<leader>gg` | gitui |
-| `<leader>xx` `<leader>xt` | diagnostics, todos (trouble) |
-| `<leader>sr` | search and replace (grug-far) |
-| `<leader>a` `<leader>o` `ga` (visual) | CodeCompanion: chat, actions, add selection |
-| `<leader>md` / `<leader>mds` | leaf full screen / watch split |
-| `<leader>db` `<leader>dc` `<leader>du` | breakpoint, continue, dap-view |
-| `<leader>tt` `<leader>tr` `<leader>ts` | run tests, nearest test, summary |
-| `<leader>qs` | restore session |
+| Keys                                                   | Action                                                          |
+| ------------------------------------------------------ | --------------------------------------------------------------- |
+| `<leader><space>` `<leader>ff` `<leader>/` `<leader>,` | smart find, files, grep, buffers                                |
+| `<leader>e` / `<leader>E`                              | neo-tree (git root / cwd)                                       |
+| `gd` `gr` `gI` `gy` `K`                                | definition, references, implementations, type definition, hover |
+| `<leader>ca` `<leader>cr` `<leader>cf`                 | code action, rename, format                                     |
+| `<leader>uf` / `<leader>uF`                            | toggle format on save (global / buffer)                         |
+| `s` / `S`                                              | flash jump / flash treesitter                                   |
+| `gsa` `gsd` `gsr`                                      | surround add / delete / replace                                 |
+| `]h` `[h` `<leader>gh…`                                | git hunks                                                       |
+| `<leader>gg`                                           | gitui                                                           |
+| `<leader>xx` `<leader>xt`                              | diagnostics, todos (trouble)                                    |
+| `<leader>sr`                                           | search and replace (grug-far)                                   |
+| `<leader>a` `<leader>o` `ga` (visual)                  | CodeCompanion: chat, actions, add selection                     |
+| `<leader>md` / `<leader>mds`                           | leaf full screen / watch split                                  |
+| `<leader>db` `<leader>dc` `<leader>du`                 | breakpoint, continue, dap-view                                  |
+| `<leader>tt` `<leader>tr` `<leader>ts`                 | run tests, nearest test, summary                                |
+| `<leader>qs`                                           | restore session                                                 |
