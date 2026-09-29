@@ -131,3 +131,43 @@ config/
 3. Headless execution verification:
    - `./result/bin/nvim --headless -c "checkhealth" -c "q"`
    - Test plugin loading: ensure `catppuccin`, `codecompanion`, `conform`, `lspconfig`, `rustaceanvim`, `blink.cmp` load without Lua errors.
+
+---
+
+## 5. Implementation Notes (2026-09-29)
+
+Where the implementation differs from the design above, and why:
+
+- **Additional layout**: `flake/checks/` (headless smoke test, implemented in
+  `src/neovim/checks/`), `src/neovim/devshell.nix`, `src/neovim/pkgs/bacon-ls.nix`,
+  `config/lua/config/icons.lua`, and `config/lua/plugins/editor.lua` (mini, flash,
+  persistence, gitsigns, grug-far). Implementation stays out of `flake/`, per
+  `nix-flake-organization`.
+- **bacon-ls packaged**: it is not in nixpkgs, so the `bacon_ls` setup never had
+  a binary. It is now built from crates.io (0.31.0).
+- **Runtimes appended to PATH**: `go` (needed by gopls, which previously errored
+  on every `.go` file), `nodejs_22`, `git` and `curl` go in a `runtimes`
+  category that is suffixed rather than prefixed, so project toolchains are never
+  shadowed. debugpy's interpreter is passed by store path instead of being put on
+  PATH.
+- **Plugins**: added `flash`, `persistence`, `nvim-lint`, `lazydev`,
+  `SchemaStore`, `nvim-dap-python` (LazyVim behaviours in daily use). Dropped
+  `fzf-lua` in favour of `snacks.picker`, and dropped LazyVim, lazy.nvim,
+  tokyonight, noice, gh.nvim, litee and vim-tmux-navigator.
+- **Treesitter**: nixpkgs ships the nvim-treesitter `main` rewrite, so there is no
+  `configs.setup`. Highlight, folds and indent are enabled per buffer from a
+  FileType autocmd.
+- **Staged loading**: completion, AI, DAP and testing load on `UIEnter`. The
+  eager config takes about 45 ms, down from about 130 ms when everything loaded
+  eagerly.
+- **Unfree**: only `packer` is allowed (`allowUnfreePredicate`), replacing the
+  global `allowUnfree = true`.
+- **Systems**: `x86_64-linux`, `aarch64-linux`, `aarch64-darwin`. nixpkgs 26.11
+  dropped `x86_64-darwin`, and the old `pngpaste` dependency broke Linux
+  evaluation; it is now darwin-only.
+- **nixd**: the flake is resolved per LSP root with valid attribute quoting (the
+  old `.'hostname'` was not valid Nix) and falls back to `<nixpkgs>` outside
+  flakes.
+- **Removed**: `config/.neoconf.json` and `config/README.md` (LazyVim starter),
+  plus the artifacts listed in §3. `.repro/` is untracked (gitignored) scratch
+  state and was left on disk.
