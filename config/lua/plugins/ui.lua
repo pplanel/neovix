@@ -28,7 +28,8 @@ require("snacks").setup({
   statuscolumn = { enabled = true },
   words = { enabled = true },
   picker = { enabled = true, ui_select = true },
-  image = { enabled = true },
+  -- render-markdown renders LaTeX math (as Unicode); two renderers conflict.
+  image = { enabled = true, math = { enabled = false } },
   dashboard = {
     enabled = true,
     preset = {
@@ -102,6 +103,50 @@ map({ "n", "t" }, "]]", function() Snacks.words.jump(vim.v.count1) end, { desc =
 map({ "n", "t" }, "[[", function() Snacks.words.jump(-vim.v.count1) end, { desc = "Prev Reference" })
 -- stylua: ignore end
 
+-- ── noice: cmdline, messages and LSP docs UI ────────────────────────────────
+-- Notifications still go through Snacks.notifier (noice's notify view prefers
+-- the snacks backend).
+require("noice").setup({
+  lsp = {
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+    },
+    -- blink.cmp already shows signature help; two would stack.
+    signature = { enabled = false },
+  },
+  routes = {
+    -- Undo/redo and write messages go to the small corner view.
+    {
+      filter = {
+        event = "msg_show",
+        any = { { find = "%d+L, %d+B" }, { find = "; after #%d+" }, { find = "; before #%d+" } },
+      },
+      view = "mini",
+    },
+  },
+  presets = {
+    bottom_search = true,
+    command_palette = true,
+    long_message_to_split = true,
+  },
+})
+
+-- stylua: ignore start
+map("c", "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end, { desc = "Redirect Cmdline" })
+map("n", "<leader>snl", function() require("noice").cmd("last") end, { desc = "Noice Last Message" })
+map("n", "<leader>snh", function() require("noice").cmd("history") end, { desc = "Noice History" })
+map("n", "<leader>sna", function() require("noice").cmd("all") end, { desc = "Noice All" })
+map("n", "<leader>snd", function() require("noice").cmd("dismiss") end, { desc = "Dismiss All" })
+map("n", "<leader>snt", function() require("noice").cmd("pick") end, { desc = "Noice Picker" })
+map({ "i", "n", "s" }, "<c-f>", function()
+  if not require("noice.lsp").scroll(4) then return "<c-f>" end
+end, { silent = true, expr = true, desc = "Scroll Forward" })
+map({ "i", "n", "s" }, "<c-b>", function()
+  if not require("noice.lsp").scroll(-4) then return "<c-b>" end
+end, { silent = true, expr = true, desc = "Scroll Backward" })
+-- stylua: ignore end
+
 -- ── which-key ───────────────────────────────────────────────────────────────
 require("which-key").setup({
   preset = "helix",
@@ -118,6 +163,7 @@ require("which-key").setup({
       { "<leader>m", group = "markdown" },
       { "<leader>q", group = "quit/session" },
       { "<leader>s", group = "search" },
+      { "<leader>sn", group = "noice" },
       { "<leader>t", group = "test" },
       { "<leader>u", group = "ui" },
       { "<leader>w", group = "windows", proxy = "<c-w>" },

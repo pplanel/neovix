@@ -39,6 +39,7 @@ in
       ripgrep
       fd
       gitui
+      tree-sitter # nvim-treesitter health requires the CLI (parsers come from Nix)
     ];
 
     lua = [
@@ -100,6 +101,7 @@ in
     ];
 
     docs = [
+      python3Packages.pylatexenc # latex2text: LaTeX math in render-markdown
       marksman
       markdown-toc
       markdownlint-cli2

@@ -13,6 +13,7 @@ with vimPlugins; {
     lualine-nvim
     bufferline-nvim
     which-key-nvim
+    noice-nvim
     neo-tree-nvim
     nui-nvim
     nvim-web-devicons

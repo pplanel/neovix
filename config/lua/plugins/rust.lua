@@ -2,6 +2,8 @@
 -- global lazily when the first Rust buffer opens. bacon_ls is enabled in lsp.lua.
 vim.g.rustaceanvim = {
   server = {
+    -- Match bacon_ls (UTF-16 only); see lsp.lua.
+    capabilities = { general = { positionEncodings = { "utf-16" } } },
     on_attach = function(_, bufnr)
       -- stylua: ignore start
       -- Grouped code actions replace the plain <leader>ca in Rust buffers.

@@ -3,6 +3,12 @@
 -- the Nix toolchains on PATH. Rust is owned by rustaceanvim (see rust.lua).
 -- Completion capabilities are registered by blink.cmp's own plugin/ script.
 
+-- Offer only UTF-16 so every client on a buffer agrees: pyright and bacon_ls
+-- can't do UTF-8, and ruff would otherwise pick it (mixed encodings garble
+-- edits). rust-analyzer gets the same setting in rust.lua.
+local utf16 = { general = { positionEncodings = { "utf-16" } } }
+vim.lsp.config("*", { capabilities = utf16 })
+
 -- ── Nix ─────────────────────────────────────────────────────────────────────
 -- Options come from the flake at the project root: nixpkgs for package
 -- completion, plus nix-darwin/home-manager options keyed by this host's
@@ -115,6 +121,8 @@ vim.lsp.config("jsonls", {
 })
 
 vim.lsp.config("yamlls", {
+  -- Upstream also lists compound filetypes (yaml.gitlab, …) nothing here sets.
+  filetypes = { "yaml" },
   settings = {
     redhat = { telemetry = { enabled = false } },
     yaml = {

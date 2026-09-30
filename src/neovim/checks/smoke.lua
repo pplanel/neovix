@@ -28,6 +28,7 @@ for _, mod in ipairs({
 	"dap-view",
 	"dapui",
 	"neotest",
+	"noice",
 	"flash",
 	"gitsigns",
 	"grug-far",
