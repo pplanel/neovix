@@ -29,6 +29,7 @@ for _, mod in ipairs({
 	"dapui",
 	"neotest",
 	"noice",
+	"telescope",
 	"flash",
 	"gitsigns",
 	"grug-far",

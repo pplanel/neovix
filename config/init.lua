@@ -37,7 +37,7 @@ require("config.autocmds")
 -- 2. Deferred: completion and tools, right after the UI is up. Completion
 --    goes first so CodeCompanion finds blink.cmp configured when it registers
 --    its chat source.
-local deferred = { "plugins.completion", "plugins.ai", "plugins.dap", "plugins.testing" }
+local deferred = { "plugins.completion", "plugins.telescope", "plugins.ai", "plugins.dap", "plugins.testing" }
 
 if #vim.api.nvim_list_uis() == 0 then
   -- Headless (scripts, `nix flake check`): no UI to wait for, load everything.

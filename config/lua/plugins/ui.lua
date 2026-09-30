@@ -158,6 +158,7 @@ require("which-key").setup({
       { "<leader>c", group = "code" },
       { "<leader>d", group = "debug" },
       { "<leader>f", group = "file/find" },
+      { "<leader>F", group = "telescope" },
       { "<leader>g", group = "git" },
       { "<leader>gh", group = "hunks" },
       { "<leader>m", group = "markdown" },

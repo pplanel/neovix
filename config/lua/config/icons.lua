@@ -33,6 +33,12 @@ M.ui = {
   sep_right = "\u{e0b4}",
 }
 
+M.telescope = {
+  prompt = "\u{f002}  ", -- magnifier
+  caret = "\u{f0da} ", -- caret right
+  multi = "\u{f00c} ", -- check
+}
+
 M.dashboard = {
   find = "\u{f002} ",
   new = "\u{f15b} ",

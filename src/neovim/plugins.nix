@@ -19,6 +19,8 @@ with vimPlugins; {
     nvim-web-devicons
     mini-nvim
     snacks-nvim
+    telescope-nvim
+    telescope-fzf-native-nvim
     trouble-nvim
     todo-comments-nvim
   ];
