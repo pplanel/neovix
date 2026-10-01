@@ -11,6 +11,17 @@ require("codecompanion").setup({
         })
       end,
     },
+    acp = {
+      -- The preset maps CLAUDE_CODE_OAUTH_TOKEN to the env var of that name,
+      -- but when it is unset CodeCompanion passes the literal string, which
+      -- claude sends as a bearer token (401). Forward it only when set, so
+      -- claude otherwise uses its own login.
+      claude_code = function()
+        return require("codecompanion.adapters").extend("claude_code", {
+          env = { CLAUDE_CODE_OAUTH_TOKEN = function() return os.getenv("CLAUDE_CODE_OAUTH_TOKEN") end },
+        })
+      end,
+    },
   },
   -- Chat runs Claude Code over ACP (claude-agent-acp drives the `claude` on
   -- PATH); ACP adapters are chat-only, so inline and cmd stay on Gemini.
