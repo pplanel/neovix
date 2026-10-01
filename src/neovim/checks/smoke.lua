@@ -64,6 +64,7 @@ for _, bin in ipairs({
 	"prettier",
 	"marksman",
 	"npx",
+	"claude-agent-acp",
 	"go",
 	"swiftformat",
 	"swiftlint",

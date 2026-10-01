@@ -33,6 +33,18 @@
     mkdir -p $out/bin
     ln -s ${pkgs.coreutils}/bin/stdbuf $out/bin/stdbuf
   '';
+
+  # ACP bridge for CodeCompanion's claude_code adapter, minus a Claude Code of
+  # its own: nixpkgs wraps it around the unfree claude-code package and the
+  # Agent SDK bundles a ~200M native copy. Both are dropped; it drives the
+  # `claude` already on PATH (set CLAUDE_CODE_EXECUTABLE to pick another).
+  claudeAgentAcp = pkgs.claude-agent-acp.overrideAttrs {
+    postInstall = ''
+      rm -rf $out/lib/node_modules/@agentclientprotocol/claude-agent-acp/node_modules/@anthropic-ai/claude-agent-sdk-*
+      wrapProgram $out/bin/claude-agent-acp \
+        --run 'if [ -z "''${CLAUDE_CODE_EXECUTABLE-}" ] && claude=$(command -v claude); then export CLAUDE_CODE_EXECUTABLE=$claude; fi'
+    '';
+  };
 in
   with pkgs; {
     core = [
@@ -125,7 +137,10 @@ in
       ];
 
     ai =
-      [ast-grep]
+      [
+        ast-grep
+        claudeAgentAcp
+      ]
       ++ lib.optionals stdenv.hostPlatform.isDarwin [pngpaste];
 
     media = [

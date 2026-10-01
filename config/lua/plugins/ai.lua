@@ -12,8 +12,10 @@ require("codecompanion").setup({
       end,
     },
   },
+  -- Chat runs Claude Code over ACP (claude-agent-acp drives the `claude` on
+  -- PATH); ACP adapters are chat-only, so inline and cmd stay on Gemini.
   interactions = {
-    chat = { adapter = { name = "gemini", model = model } },
+    chat = { adapter = "claude_code" },
     inline = { adapter = { name = "gemini", model = model } },
     cmd = { adapter = { name = "gemini", model = model } },
   },
