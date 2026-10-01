@@ -46,7 +46,7 @@ end
 for _, bin in ipairs({
 	"rg",
 	"fd",
-	"nixd",
+	"nil",
 	"alejandra",
 	"rust-analyzer",
 	"bacon-ls",

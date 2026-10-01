@@ -49,7 +49,6 @@ in
 
     nix = [
       nil
-      nixd
       alejandra
       statix
     ];

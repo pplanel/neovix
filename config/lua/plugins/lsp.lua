@@ -10,28 +10,8 @@ local utf16 = { general = { positionEncodings = { "utf-16" } } }
 vim.lsp.config("*", { capabilities = utf16 })
 
 -- ── Nix ─────────────────────────────────────────────────────────────────────
--- Options come from the flake at the project root: nixpkgs for package
--- completion, plus nix-darwin/home-manager options keyed by this host's
--- darwinConfiguration. Resolved per root so opening any flake just works.
-local hostname = vim.fn.hostname()
-
-vim.lsp.config("nixd", {
-  settings = { nixd = { formatting = { command = { "alejandra" } } } },
-  before_init = function(_, config)
-    local root = config.root_dir or vim.uv.cwd()
-    local nixd = config.settings.nixd
-    if not vim.uv.fs_stat(root .. "/flake.nix") then
-      nixd.nixpkgs = { expr = "import <nixpkgs> { }" }
-      return
-    end
-    local flake = ('(builtins.getFlake "%s")'):format(root)
-    local darwin = ("%s.darwinConfigurations.%q"):format(flake, hostname)
-    nixd.nixpkgs = { expr = flake .. ".inputs.nixpkgs.legacyPackages.${builtins.currentSystem}" }
-    nixd.options = {
-      darwin = { expr = darwin .. ".options" },
-      home_manager = { expr = darwin .. ".options.home-manager.users.type.getSubOptions []" },
-    }
-  end,
+vim.lsp.config("nil_ls", {
+  settings = { ["nil"] = { formatting = { command = { "alejandra" } } } },
 })
 
 -- ── Lua ─────────────────────────────────────────────────────────────────────
@@ -142,7 +122,7 @@ vim.lsp.config("bacon_ls", {
 })
 
 vim.lsp.enable({
-  "nixd",
+  "nil_ls",
   "lua_ls",
   "bashls",
   "pyright",

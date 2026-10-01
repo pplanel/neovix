@@ -60,7 +60,7 @@ config/                      # the Neovim config (Lua)
 | `editor.lua`          | mini.ai / surround / pairs, flash, persistence, gitsigns, grug-far, ts-comments                         |
 | `tree.lua`            | neo-tree                                                                                                |
 | `treesitter.lua`      | highlighting, folds, indent, textobjects, autotag                                                       |
-| `lsp.lua`             | every language server (nixd, lua_ls, gopls, pyright, ruff, vtsls, …), venv-selector                     |
+| `lsp.lua`             | every language server (nil_ls, lua_ls, gopls, pyright, ruff, vtsls, …), venv-selector                     |
 | `format.lua`          | conform (format on save) and nvim-lint                                                                  |
 | `rust.lua`            | rustaceanvim, crates.nvim (bacon_ls is in `lsp.lua`)                                                    |
 | `completion.lua`      | blink.cmp, LuaSnip, friendly-snippets, lazydev                                                          |
