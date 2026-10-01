@@ -185,7 +185,7 @@ local signs = vim.diagnostic.config().signs.text
 
 require("lualine").setup({
   options = {
-    theme = "catppuccin-nvim",
+    theme = "auto",
     globalstatus = true,
     component_separators = "",
     section_separators = { left = icons.ui.sep_right, right = icons.ui.sep_left },
@@ -225,7 +225,6 @@ require("lualine").setup({
 
 -- ── bufferline ──────────────────────────────────────────────────────────────
 require("bufferline").setup({
-  highlights = require("catppuccin.special.bufferline").get_theme(),
   options = {
     close_command = function(n) Snacks.bufdelete(n) end,
     right_mouse_command = function(n) Snacks.bufdelete(n) end,

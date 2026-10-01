@@ -55,7 +55,7 @@ config/                      # the Neovim config (Lua)
 
 | `config/lua/plugins/` | What it sets up                                                                                         |
 | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| `theme.lua`           | catppuccin (mocha / latte follows `background`)                                                         |
+| `theme.lua`           | retro-82 (dark only)                                                                                    |
 | `ui.lua`              | snacks (dashboard, picker, notifier, terminal…), which-key, lualine, bufferline, trouble, todo-comments |
 | `editor.lua`          | mini.ai / surround / pairs, flash, persistence, gitsigns, grug-far, ts-comments                         |
 | `tree.lua`            | neo-tree                                                                                                |

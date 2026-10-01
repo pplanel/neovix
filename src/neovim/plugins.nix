@@ -9,7 +9,7 @@
 }:
 with vimPlugins; {
   ui = [
-    catppuccin-nvim
+    (callPackage ./pkgs/retro-82-nvim.nix {})
     lualine-nvim
     bufferline-nvim
     which-key-nvim

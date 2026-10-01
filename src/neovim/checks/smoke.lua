@@ -9,7 +9,7 @@ local function check(ok, what)
 end
 
 for _, mod in ipairs({
-	"catppuccin",
+	"retro82",
 	"snacks",
 	"which-key",
 	"lualine",
@@ -108,7 +108,7 @@ if vim.fn.has("mac") == 1 then
 end
 
 check(
-	vim.g.colors_name == "catppuccin-mocha" or vim.g.colors_name == "catppuccin-latte",
+	vim.g.colors_name == "retro-82",
 	"colorscheme (got " .. tostring(vim.g.colors_name) .. ")"
 )
 check(#vim.lsp.get_configs({ enabled = true }) > 10, "lsp configs enabled")
