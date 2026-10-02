@@ -96,6 +96,17 @@ require("gitsigns").setup({
   end,
 })
 
+-- ── neogit (git porcelain, replaces the old gitui terminal) ─────────────────
+-- gitsigns above still owns inline hunks/blame; Neogit is the full staging and
+-- commit UI. Diffs and pickers reuse plugins already installed.
+require("neogit").setup({
+  integrations = {
+    diffview = true,
+    telescope = true,
+    snacks = true,
+  },
+})
+
 -- ── grug-far (search & replace) ─────────────────────────────────────────────
 require("grug-far").setup({ headerMaxWidth = 80 })
 map({ "n", "v" }, "<leader>sr", function()

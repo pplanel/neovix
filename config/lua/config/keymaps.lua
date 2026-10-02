@@ -99,17 +99,17 @@ Snacks.toggle.inlay_hints():map("<leader>uh")
 Snacks.toggle.treesitter():map("<leader>uT")
 Snacks.toggle.indent():map("<leader>ug")
 Snacks.toggle.dim():map("<leader>uD")
-Snacks.toggle.zen():map("<leader>uz")
+map("n", "<leader>uz", "<cmd>ZenMode<cr>", { desc = "Zen Mode" })
 Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>ub")
 
 -- Git
 map(
   "n",
   "<leader>gg",
-  function() Snacks.terminal({ "gitui" }, { cwd = Snacks.git.get_root() }) end,
-  { desc = "GitUi (Root Dir)" }
+  function() require("neogit").open({ cwd = Snacks.git.get_root() }) end,
+  { desc = "Neogit (Root Dir)" }
 )
-map("n", "<leader>gG", function() Snacks.terminal({ "gitui" }) end, { desc = "GitUi (cwd)" })
+map("n", "<leader>gG", function() require("neogit").open() end, { desc = "Neogit (cwd)" })
 map({ "n", "x" }, "<leader>gB", function() Snacks.gitbrowse() end, { desc = "Git Browse (open)" })
 map("n", "<leader>gb", function() Snacks.picker.git_log_line() end, { desc = "Git Blame Line" })
 

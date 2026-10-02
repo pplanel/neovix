@@ -18,6 +18,7 @@ vim.lsp.config("nil_ls", {
 vim.lsp.config("lua_ls", {
   settings = {
     Lua = {
+      diagnostics = { globals = { "Snacks" } },
       workspace = { checkThirdParty = false },
       completion = { callSnippet = "Replace" },
       hint = { enable = true, setType = false, paramType = true, arrayIndex = "Disable" },

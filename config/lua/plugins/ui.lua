@@ -21,15 +21,16 @@ require("snacks").setup({
   bigfile = { enabled = true },
   quickfile = { enabled = true },
   input = { enabled = true },
-  notifier = { enabled = true, timeout = 3000 },
+  -- Notifications are handled by nvim-notify (see below), not Snacks.
+  notifier = { enabled = false },
   indent = { enabled = true },
   scope = { enabled = true },
   scroll = { enabled = false },
   statuscolumn = { enabled = true },
   words = { enabled = true },
   picker = { enabled = true, ui_select = true },
-  -- render-markdown renders LaTeX math (as Unicode); two renderers conflict.
-  image = { enabled = true, math = { enabled = false } },
+  -- Image rendering is handled by image.nvim (see below); Snacks' would conflict.
+  image = { enabled = false },
   dashboard = {
     enabled = true,
     preset = {
@@ -65,7 +66,7 @@ map("n", "<leader><space>", function() Snacks.picker.smart() end, { desc = "Smar
 map("n", "<leader>,", function() Snacks.picker.buffers() end, { desc = "Buffers" })
 map("n", "<leader>/", function() Snacks.picker.grep() end, { desc = "Grep" })
 map("n", "<leader>:", function() Snacks.picker.command_history() end, { desc = "Command History" })
-map("n", "<leader>n", function() Snacks.picker.notifications() end, { desc = "Notification History" })
+map("n", "<leader>n", function() require("noice").cmd("history") end, { desc = "Notification History" })
 map("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc = "Buffers" })
 map("n", "<leader>fc", function() Snacks.picker.files({ cwd = vim.g.neovix.config }) end, { desc = "Find Config File" })
 map("n", "<leader>ff", function() Snacks.picker.files() end, { desc = "Find Files" })
@@ -96,17 +97,27 @@ map("n", "<leader>sq", function() Snacks.picker.qflist() end, { desc = "Quickfix
 map("n", "<leader>sR", function() Snacks.picker.resume() end, { desc = "Resume" })
 map("n", "<leader>su", function() Snacks.picker.undo() end, { desc = "Undo History" })
 map("n", "<leader>uC", function() Snacks.picker.colorschemes() end, { desc = "Colorschemes" })
-map("n", "<leader>un", function() Snacks.notifier.hide() end, { desc = "Dismiss All Notifications" })
+map("n", "<leader>un", function() require("notify").dismiss({ silent = true, pending = true }) end, { desc = "Dismiss All Notifications" })
 map("n", "<leader>.", function() Snacks.scratch() end, { desc = "Toggle Scratch Buffer" })
 map("n", "<leader>S", function() Snacks.scratch.select() end, { desc = "Select Scratch Buffer" })
 map({ "n", "t" }, "]]", function() Snacks.words.jump(vim.v.count1) end, { desc = "Next Reference" })
 map({ "n", "t" }, "[[", function() Snacks.words.jump(-vim.v.count1) end, { desc = "Prev Reference" })
 -- stylua: ignore end
 
+-- ── nvim-notify: notification backend ───────────────────────────────────────
+require("notify").setup({
+  stages = "fade_in_slide_out",
+  timeout = 3000,
+  render = "compact",
+  -- Non-blocking: never let a flood of notifications stall the UI.
+  max_width = 80,
+})
+vim.notify = require("notify")
+
 -- ── noice: cmdline, messages and LSP docs UI ────────────────────────────────
--- Notifications still go through Snacks.notifier (noice's notify view prefers
--- the snacks backend).
+-- Notifications are rendered by nvim-notify via noice's "notify" backend.
 require("noice").setup({
+  notify = { enabled = true, view = "notify" },
   lsp = {
     override = {
       ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
@@ -265,3 +276,26 @@ map("n", "[t", function() require("todo-comments").jump_prev() end, { desc = "Pr
 map("n", "<leader>xt", "<cmd>Trouble todo toggle<cr>", { desc = "Todo (Trouble)" })
 map("n", "<leader>st", function() Snacks.picker.todo_comments() end, { desc = "Todo" })
 -- stylua: ignore end
+
+-- ── zen-mode (distraction-free) ─────────────────────────────────────────────
+-- Keymap <leader>uz lives in config/keymaps.lua next to the other UI toggles.
+require("zen-mode").setup({
+  window = { width = 0.75 },
+  plugins = {
+    gitsigns = { enabled = false },
+    tmux = { enabled = true },
+  },
+})
+
+-- ── image.nvim: inline images in the terminal ───────────────────────────────
+-- magick_cli uses the `imagemagick` already on PATH (toolchains media group),
+-- so no luarock is needed. Needs a graphics-capable terminal (kitty/ghostty).
+require("image").setup({
+  backend = "kitty",
+  processor = "magick_cli",
+  integrations = {
+    markdown = { enabled = true, only_render_image_at_cursor = true },
+    neorg = { enabled = false },
+  },
+  max_width_window_percentage = 60,
+})

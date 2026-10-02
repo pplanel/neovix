@@ -50,7 +50,6 @@ in
     core = [
       ripgrep
       fd
-      gitui
       tree-sitter # nvim-treesitter health requires the CLI (parsers come from Nix)
     ];
 

@@ -5,6 +5,32 @@ require("neo-tree").setup({
   close_if_last_window = true,
   sources = { "filesystem", "buffers", "git_status" },
   open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "codecompanion" },
+  commands = {
+    open_all_files = function(state)
+      ---@diagnostic disable-next-line: undefined-field
+      local node = state.tree:get_node()
+      if node.type ~= "directory" then return end
+
+      local directory = node:get_id()
+      local handle = vim.uv.fs_scandir(directory)
+      if not handle then return end
+
+      local first = true
+      while true do
+        local name, type = vim.uv.fs_scandir_next(handle)
+        if not name then break end
+        if type == "file" then
+          local filepath = directory .. "/" .. name
+          if first then
+            vim.cmd("edit " .. vim.fn.fnameescape(filepath))
+            first = false
+          else
+            vim.cmd("badd " .. vim.fn.fnameescape(filepath))
+          end
+        end
+      end
+    end,
+  },
   event_handlers = {
     -- Keep the tree visible after opening a file from it.
     {
@@ -25,11 +51,14 @@ require("neo-tree").setup({
   },
   window = {
     mappings = {
+      ["O"] = "open_all_files",
       ["l"] = "open",
       ["h"] = "close_node",
       ["<space>"] = "none",
       ["Y"] = {
+        ---@diagnostic disable-next-line: assign-type-mismatch
         function(state)
+          ---@diagnostic disable-next-line: undefined-field
           local path = state.tree:get_node():get_id()
           vim.fn.setreg("+", path, "c")
           vim.notify("Copied " .. path)
@@ -47,7 +76,6 @@ require("neo-tree").setup({
     },
   },
 })
-
 -- stylua: ignore start
 map("n", "<leader>e", function()
   require("neo-tree.command").execute({ toggle = true, dir = Snacks.git.get_root() or vim.uv.cwd() })

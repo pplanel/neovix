@@ -10,10 +10,12 @@
 with vimPlugins; {
   ui = [
     (callPackage ./pkgs/retro-82-nvim.nix {})
+    onedark-nvim
     lualine-nvim
     bufferline-nvim
     which-key-nvim
     noice-nvim
+    nvim-notify
     neo-tree-nvim
     nui-nvim
     nvim-web-devicons
@@ -23,6 +25,8 @@ with vimPlugins; {
     telescope-fzf-native-nvim
     trouble-nvim
     todo-comments-nvim
+    zen-mode-nvim
+    image-nvim
   ];
 
   editing = [
@@ -30,6 +34,8 @@ with vimPlugins; {
     persistence-nvim
     vim-tmux-navigator
     gitsigns-nvim
+    neogit
+    diffview-nvim
     grug-far-nvim
     ts-comments-nvim
   ];
