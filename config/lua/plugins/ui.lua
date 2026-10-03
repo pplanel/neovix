@@ -106,6 +106,7 @@ map({ "n", "t" }, "[[", function() Snacks.words.jump(-vim.v.count1) end, { desc 
 
 -- ── nvim-notify: notification backend ───────────────────────────────────────
 require("notify").setup({
+  background_colour = "#1a212e",
   stages = "fade_in_slide_out",
   timeout = 3000,
   render = "compact",
