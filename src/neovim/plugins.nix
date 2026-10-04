@@ -36,6 +36,7 @@ with vimPlugins; {
     gitsigns-nvim
     neogit
     diffview-nvim
+    (callPackage ./pkgs/github-actions-nvim.nix {})
     grug-far-nvim
     ts-comments-nvim
   ];

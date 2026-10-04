@@ -20,6 +20,7 @@ for _, name in ipairs({
   "plugins.theme",
   "plugins.ui",
   "plugins.editor",
+  "plugins.github_actions",
   "plugins.vim_tmux_navigator",
   "plugins.tree",
   "plugins.treesitter",

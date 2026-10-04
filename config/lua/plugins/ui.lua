@@ -172,6 +172,7 @@ require("which-key").setup({
       { "<leader>f", group = "file/find" },
       { "<leader>F", group = "telescope" },
       { "<leader>g", group = "git" },
+      { "<leader>ga", group = "github actions" },
       { "<leader>gh", group = "hunks" },
       { "<leader>m", group = "markdown" },
       { "<leader>q", group = "quit/session" },

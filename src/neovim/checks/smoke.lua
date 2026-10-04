@@ -10,6 +10,7 @@ end
 
 for _, mod in ipairs({
 	"retro82",
+	"onedark",
 	"snacks",
 	"which-key",
 	"lualine",
@@ -39,6 +40,7 @@ for _, mod in ipairs({
 	"nvim-treesitter-textobjects",
 	"persistence",
 	"schemastore",
+	"github-actions",
 }) do
 	check(pcall(require, mod), "require " .. mod)
 end
@@ -99,6 +101,7 @@ end
 
 check(vim.fn.exists(":TmuxNavigateLeft") == 2, "vim-tmux-navigator commands")
 check(vim.fn.maparg("<c-h>", "n"):find("TmuxNavigateLeft") ~= nil, "<c-h> mapped to tmux navigator")
+check(vim.fn.exists(":GithubActionsHistory") == 2, "github-actions commands")
 
 if vim.fn.has("mac") == 1 then
 	check(pcall(require, "xcodebuild"), "require xcodebuild")
@@ -107,10 +110,7 @@ if vim.fn.has("mac") == 1 then
 	end
 end
 
-check(
-	vim.g.colors_name == "retro-82",
-	"colorscheme (got " .. tostring(vim.g.colors_name) .. ")"
-)
+check(vim.g.colors_name == "onedark", "colorscheme (got " .. tostring(vim.g.colors_name) .. ")")
 check(#vim.lsp.get_configs({ enabled = true }) > 10, "lsp configs enabled")
 
 local errors = vim.fn.execute("messages")

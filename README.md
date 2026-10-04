@@ -55,9 +55,10 @@ config/                      # the Neovim config (Lua)
 
 | `config/lua/plugins/` | What it sets up                                                                                         |
 | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| `theme.lua`           | retro-82 (dark only)                                                                                    |
+| `theme.lua`           | onedark (deep)                                                                                          |
 | `ui.lua`              | snacks (dashboard, picker, notifier, terminal…), which-key, lualine, bufferline, trouble, todo-comments |
 | `editor.lua`          | mini.ai / surround / pairs, flash, persistence, gitsigns, grug-far, ts-comments                         |
+| `github_actions.lua`  | github-actions.nvim (workflow dispatch, run history, live watch)                                        |
 | `tree.lua`            | neo-tree                                                                                                |
 | `treesitter.lua`      | highlighting, folds, indent, textobjects, autotag                                                       |
 | `lsp.lua`             | every language server (nil_ls, lua_ls, gopls, pyright, ruff, vtsls, …), venv-selector                     |
@@ -181,6 +182,7 @@ The leader is `<space>`. The layout follows LazyVim, so the usual keys work;
 | `gsa` `gsd` `gsr`                                      | surround add / delete / replace                                 |
 | `]h` `[h` `<leader>gh…`                                | git hunks                                                       |
 | `<leader>gg`                                           | gitui                                                           |
+| `<leader>gad` `<leader>gah` `<leader>gap` `<leader>gaw` | GitHub Actions: dispatch, history, by PR, watch                 |
 | `<leader>xx` `<leader>xt`                              | diagnostics, todos (trouble)                                    |
 | `<leader>sr`                                           | search and replace (grug-far)                                   |
 | `<leader>a` `<leader>o` `ga` (visual)                  | CodeCompanion: chat, actions, add selection                     |
