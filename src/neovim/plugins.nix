@@ -11,6 +11,12 @@ with vimPlugins; {
   ui = [
     (callPackage ./pkgs/retro-82-nvim.nix {})
     onedark-nvim
+    tokyonight-nvim
+    catppuccin-nvim
+    kanagawa-nvim
+    gruvbox-nvim
+    rose-pine
+    nightfox-nvim
     lualine-nvim
     bufferline-nvim
     which-key-nvim
