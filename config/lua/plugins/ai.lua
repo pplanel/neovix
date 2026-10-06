@@ -13,7 +13,7 @@ require("codecompanion").setup({
     },
     acp = {
       -- The preset maps CLAUDE_CODE_OAUTH_TOKEN to the env var of that name,
-      -- but when it is unset CodeCompanion passes the literal string, which
+      -- but when it is unset CodeCompanion passes the literal string, which A
       -- claude sends as a bearer token (401). Forward it only when set, so
       -- claude otherwise uses its own login.
       claude_code = function()
@@ -26,7 +26,7 @@ require("codecompanion").setup({
   -- Chat runs Claude Code over ACP (claude-agent-acp drives the `claude` on
   -- PATH); ACP adapters are chat-only, so inline and cmd stay on Gemini.
   interactions = {
-    chat = { adapter = "claude_code" },
+    chat = { adapter = "gemini" },
     inline = { adapter = { name = "gemini", model = model } },
     cmd = { adapter = { name = "gemini", model = model } },
   },
@@ -38,6 +38,9 @@ require("codecompanion").setup({
       },
       ["GitHits"] = {
         cmd = { "npx", "-y", "githits@latest", "mcp", "start" },
+      },
+      ["linear"] = {
+        cmd = { "npx", "-y", "mcp-remote", "https://mcp.linear.app/mcp" },
       },
     },
   },
@@ -57,6 +60,63 @@ require("codecompanion").setup({
         ".agents/rules/rust_async_patterns.md",
         ".agents/rules/rust_best_practices.md",
       },
+    },
+  },
+  srategies = {
+    chat = {
+      -- ...existing code...
+      tools = {
+        opts = {
+          auto_submit_errors = true,
+          auto_submit_success = true,
+          system_prompt = [[You are an autonomous AI programming agent. You have access to tools to inspect the environment, read/edit files, and execute shell commands.
+
+Guidelines:
+1. Always inspect files and search the codebase before suggesting or applying changes.
+2. Use the editor tool to apply targeted edits rather than rewriting entire files when possible.
+3. Run tests or build commands with the cmd_runner tool to verify changes when applicable.
+4. If a tool returns an error, analyze the error output and attempt to self-correct.]],
+        },
+        groups = {
+          ["developer"] = {
+            description = "Full agent suite with shell, editor, buffer, file search, and web tools",
+            system_prompt = "You are an autonomous software engineer with full access to project tools.",
+            tools = {
+              "cmd_runner",
+              "editor",
+              "files",
+              "buffer",
+              "grep",
+              "fetch_web_content",
+            },
+          },
+        },
+        ["cmd_runner"] = {
+          opts = {
+            requires_approval = true,
+          },
+        },
+        ["editor"] = {
+          opts = {
+            requires_approval = true,
+          },
+        },
+        ["files"] = {},
+        ["buffer"] = {},
+        ["grep"] = {},
+        ["fetch_web_content"] = {},
+        ["web_search"] = {
+          opts = {
+            adapter = "tavily", -- or "brave", "serpapi", "google"
+            params = {
+              api_key = "TAVILY_API_KEY",
+            },
+          },
+        },
+      },
+    },
+    inline = {
+      -- ...existing code...
     },
   },
   opts = {
