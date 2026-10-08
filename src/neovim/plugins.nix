@@ -82,6 +82,7 @@ with vimPlugins; {
 
   ai = [
     codecompanion-nvim
+    codecompanion-history-nvim
     plenary-nvim
     img-clip-nvim
   ];

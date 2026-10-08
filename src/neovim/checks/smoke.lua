@@ -24,6 +24,7 @@ for _, mod in ipairs({
 	"rustaceanvim",
 	"crates",
 	"codecompanion",
+	"codecompanion._extensions.history",
 	"render-markdown",
 	"dap",
 	"dap-view",
