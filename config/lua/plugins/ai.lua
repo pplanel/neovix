@@ -27,12 +27,21 @@ require("codecompanion").setup({
     },
     acp = {
       -- The preset maps CLAUDE_CODE_OAUTH_TOKEN to the env var of that name,
-      -- but when it is unset CodeCompanion passes the literal string, which A
+      -- but when it is unset CodeCompanion passes the literal string, which
       -- claude sends as a bearer token (401). Forward it only when set, so
       -- claude otherwise uses its own login.
+      -- claude-agent-acp drives `claude` from PATH, which on arrakis is the work
+      -- account; point it at `claude-personal` (personal config dir, OAuth login,
+      -- no API key) when that exists. An explicit CLAUDE_CODE_EXECUTABLE wins.
       claude_code = function()
         return require("codecompanion.adapters").extend("claude_code", {
-          env = { CLAUDE_CODE_OAUTH_TOKEN = function() return os.getenv("CLAUDE_CODE_OAUTH_TOKEN") end },
+          env = {
+            CLAUDE_CODE_OAUTH_TOKEN = function() return os.getenv("CLAUDE_CODE_OAUTH_TOKEN") end,
+            CLAUDE_CODE_EXECUTABLE = function()
+              local exe = os.getenv("CLAUDE_CODE_EXECUTABLE") or vim.fn.exepath("claude-personal")
+              return exe ~= "" and exe or nil
+            end,
+          },
         })
       end,
       gemini_cli = function()
@@ -42,10 +51,10 @@ require("codecompanion").setup({
       end,
     },
   },
-  -- Chat runs on Gemini; ACP adapters are chat-only, so inline and cmd stay on Gemini too.
+  -- Chat runs Claude Code over ACP; ACP adapters are chat-only, so inline and cmd stay on Gemini.
   interactions = {
     chat = {
-      adapter = "gemini",
+      adapter = "claude_code",
       tools = {
         opts = {
           -- Every chat starts with the developer toolset; no need to type @{developer}.
