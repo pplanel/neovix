@@ -43,7 +43,7 @@ src/neovim/                  # implementation
   package.nix                #   wrapNeovimUnstable + bootstrap
   plugins.nix                #   plugins, grouped by domain
   toolchains.nix             #   CLI tools on PATH, grouped by domain
-  treesitter.nix             #   all grammars, prebuilt
+  treesitter.nix             #   allowlisted grammars, prebuilt
   pkgs/bacon-ls.nix          #   packages missing from nixpkgs
   devshell.nix
   checks/smoke.{nix,lua}     #   headless boot test

@@ -26,7 +26,7 @@ nix develop                                 # sets NEOVIX_CONFIG=$PWD/config; th
 **The package (`src/neovim/package.nix`)** calls `wrapNeovimUnstable` with:
 - `plugins.nix`: plugins as categorised attrsets, flattened into the packpath, so every plugin is on the runtimepath at startup. Packages missing from nixpkgs live in `src/neovim/pkgs/`.
 - `toolchains.nix`: CLI tools grouped by category. Every category is **prepended** to `PATH` (pinned versions win) except `runtimes` (go, node, git, curl…), which is **appended**, so a project's own toolchain from direnv/`nix develop` takes precedence.
-- `treesitter.nix`: all grammars prebuilt.
+- `treesitter.nix`: an allowlist of prebuilt grammars (languages with tooling, plus injections). Add one when adding a language; others fall back to Vim syntax.
 - Only `*.lua` files from `config/` are copied to the store (`lib.fileset`), so non-Lua edits there don't trigger rebuilds.
 - `luaRcContent` is the bootstrap. It picks the config dir (`NEOVIX_CONFIG` or the store copy), removes `~/.config/nvim` from the runtimepath, prepends `config/`, sets `vim.g.neovix` (version, config paths, `debugpy_python` store path), then `dofile`s `config/init.lua`.
 
