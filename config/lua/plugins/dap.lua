@@ -120,6 +120,86 @@ dap.configurations.lua = {
   { type = "nlua", request = "attach", name = "Attach to running Neovim instance" },
 }
 
+-- ── .vscode/launch.json ─────────────────────────────────────────────────────
+-- nvim-dap offers launch.json entries on dap.continue(), dispatching on their
+-- `type`. Map the VS Code extension type names onto the adapters above.
+dap.adapters["lldb-dap"] = dap.adapters.lldb -- LLDB DAP extension
+dap.adapters.codelldb = dap.adapters.lldb -- CodeLLDB (whose own type, "lldb", is ours already)
+dap.adapters.go = dap.adapters.delve -- Go extension
+
+-- VS Code's JSONC allows trailing commas; vim.json only skips comments.
+require("dap.ext.vscode").json_decode = function(str, opts)
+  return vim.json.decode((str:gsub(",(%s*[}%]])", "%1")), opts)
+end
+
+-- nvim-dap only looks in the cwd; find the nearest one upward from the buffer
+-- instead, and make ${workspaceFolder} point at the directory that holds it.
+dap.providers.configs["dap.launch.json"] = function(bufnr)
+  local start = vim.api.nvim_buf_get_name(bufnr)
+  local root = vim.fs.root(
+    start ~= "" and start or vim.fn.getcwd(),
+    function(name, path) return name == ".vscode" and vim.uv.fs_stat(path .. "/.vscode/launch.json") ~= nil end
+  )
+  if not root then return {} end
+  local ok, configs = pcall(require("dap.ext.vscode").getconfigs, root .. "/.vscode/launch.json")
+  if not ok then
+    vim.notify_once("Can't read launch.json:\n" .. configs, vim.log.levels.WARN, { title = "DAP" })
+    return {}
+  end
+  local function rebase(v)
+    if type(v) == "string" then return (v:gsub("%${workspaceFolder}", root)) end
+    if type(v) == "table" and getmetatable(v) == nil then return vim.tbl_map(rebase, v) end
+    return v
+  end
+  return vim.tbl_map(rebase, configs)
+end
+
+-- CodeLLDB's `cargo` block (no `program`): build with cargo, as CodeLLDB does,
+-- and launch the artifact that matches `cargo.filter`. Runs in nvim-dap's
+-- coroutine, so the build doesn't block the UI.
+local function cargo_program(cargo, cwd)
+  local args = vim.deepcopy(cargo.args or { "build" })
+  if args[1] == "test" and not vim.list_contains(args, "--no-run") then table.insert(args, 2, "--no-run") end
+  table.insert(args, "--message-format=json")
+  vim.notify("cargo " .. table.concat(args, " "), vim.log.levels.INFO, { title = "DAP" })
+  local co = coroutine.running()
+  vim.system(vim.list_extend({ "cargo" }, args), { cwd = cwd, text = true }, function(r)
+    vim.schedule(function() coroutine.resume(co, r) end)
+  end)
+  local r = coroutine.yield()
+  if r.code ~= 0 then return nil, "cargo failed:\n" .. vim.trim(r.stderr):sub(-1500) end
+  local filter, found = cargo.filter or {}, {}
+  for line in vim.gsplit(r.stdout, "\n", { trimempty = true }) do
+    local ok, msg = pcall(vim.json.decode, line)
+    if ok and msg.reason == "compiler-artifact" and type(msg.executable) == "string" then
+      local t = msg.target
+      if (not filter.name or t.name == filter.name) and (not filter.kind or vim.list_contains(t.kind, filter.kind)) then
+        table.insert(found, msg.executable)
+      end
+    end
+  end
+  if #found ~= 1 then return nil, ("cargo produced %d matching executables; set cargo.filter"):format(#found) end
+  return found[1]
+end
+
+dap.listeners.on_config["neovix.codelldb"] = function(config)
+  if config.preLaunchTask then
+    vim.notify(("preLaunchTask '%s' is not supported; ignored"):format(config.preLaunchTask), vim.log.levels.WARN)
+  end
+  if type(config.cargo) ~= "table" or config.program then return config end
+  config = vim.deepcopy(config)
+  local program, err = cargo_program(config.cargo, config.cwd or vim.fn.getcwd())
+  if not program then
+    vim.notify(err, vim.log.levels.ERROR, { title = "DAP" })
+    config.program = dap.ABORT
+    return config
+  end
+  config.program, config.cargo = program, nil
+  -- CodeLLDB's `terminal` option is lldb-dap's `runInTerminal`.
+  if config.terminal == "integrated" or config.terminal == "external" then config.runInTerminal = true end
+  return config
+end
+
 -- ── UI ──────────────────────────────────────────────────────────────────────
 require("nvim-dap-virtual-text").setup({})
 require("dap-view").setup({ auto_toggle = true })
