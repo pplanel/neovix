@@ -8,6 +8,23 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHo
   end,
 })
 
+-- Follow the focused buffer: cd to its project root (git root first, so a
+-- crate inside a workspace still means the repo), else its directory. Only
+-- real files; terminals, trees, pickers and URI buffers keep the current cwd.
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = augroup("follow_cwd"),
+  callback = function(event)
+    if vim.bo[event.buf].buftype ~= "" then return end
+    local name = vim.api.nvim_buf_get_name(event.buf)
+    if name == "" or name:match("^%w[%w+.-]*://") then return end
+    local root = vim.fs.root(event.buf, {
+      ".git",
+      { "Cargo.toml", "go.mod", "package.json", "pyproject.toml", "flake.nix", "Package.swift", "Makefile" },
+    }) or vim.fs.dirname(name)
+    if vim.fn.isdirectory(root) == 1 and root ~= vim.fn.getcwd() then vim.fn.chdir(root) end
+  end,
+})
+
 vim.api.nvim_create_autocmd("FileChangedShellPost", {
   group = augroup("checktime_notify"),
   callback = function() vim.notify("File changed on disk. Buffer reloaded!", vim.log.levels.WARN) end,
