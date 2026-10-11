@@ -149,6 +149,13 @@ do
 		check(dap.adapters[type] ~= nil, "dap adapter " .. type)
 	end
 	check(dap.listeners.on_config["neovix.codelldb"] ~= nil, "dap codelldb cargo listener")
+	-- config/lldb.lua: dev shells' DEVELOPER_DIR/SDKROOT must not reach lldb-dap.
+	local lldb = dap.adapters.lldb or {}
+	check(
+		vim.list_contains(lldb.args or {}, "DEVELOPER_DIR")
+			and vim.list_contains(lldb.args or {}, vim.g.neovix.lldb_dap),
+		"lldb adapter strips DEVELOPER_DIR (got " .. vim.inspect(lldb) .. ")"
+	)
 end
 
 -- autocmds.lua follows the focused buffer's project root.

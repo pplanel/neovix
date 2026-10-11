@@ -3,7 +3,7 @@
 vim.g.rustaceanvim = {
   -- Same pinned lldb-dap as dap.lua instead of rustaceanvim's PATH lookup.
   dap = {
-    adapter = { type = "executable", command = vim.g.neovix.lldb_dap, name = "lldb" },
+    adapter = require("config.lldb"),
     -- The DYLD_LIBRARY_PATH this adds (rustc's lib dir) also reaches lldb-dap's
     -- runInTerminal launcher, which then loads rustc's libLLVM instead of its
     -- own and dies in dyld ("Timed out ... runInTerminal launcher"). Only

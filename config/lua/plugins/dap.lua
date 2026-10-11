@@ -17,9 +17,7 @@ for name, sign in pairs({
 end
 
 -- ── Adapters ────────────────────────────────────────────────────────────────
--- By store path, not PATH lookup: a bare name resolves against cwd when PATH
--- lacks it (devshells, GUI launches), so pin the bundled one.
-dap.adapters.lldb = { type = "executable", command = vim.g.neovix.lldb_dap, name = "lldb" }
+dap.adapters.lldb = require("config.lldb") -- pinned lldb-dap; see config/lldb.lua
 
 local lldb_launch = {
   {
