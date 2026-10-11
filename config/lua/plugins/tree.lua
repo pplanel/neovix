@@ -35,7 +35,7 @@ require("neo-tree").setup({
     -- Keep the tree visible after opening a file from it.
     {
       event = "file_opened",
-      handler = function() require("neo-tree.command").execute({ action = "open" }) end,
+      handler = function() require("neo-tree.command").execute({ action = "close" }) end,
     },
   },
   filesystem = {
