@@ -17,7 +17,9 @@ for name, sign in pairs({
 end
 
 -- ── Adapters ────────────────────────────────────────────────────────────────
-dap.adapters.lldb = { type = "executable", command = "lldb-dap", name = "lldb" }
+-- By store path, not PATH lookup: a bare name resolves against cwd when PATH
+-- lacks it (devshells, GUI launches), so pin the bundled one.
+dap.adapters.lldb = { type = "executable", command = vim.g.neovix.lldb_dap, name = "lldb" }
 
 local lldb_launch = {
   {

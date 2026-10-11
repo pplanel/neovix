@@ -55,6 +55,7 @@
       config = config_dir,
       store_config = store_config,
       debugpy_python = "${debugpyPython}/bin/python",
+      lldb_dap = "${pkgs.lldb}/bin/lldb-dap",
       features = ${lib.generators.toLua {} features'},
     }
 
