@@ -15,7 +15,21 @@ vim.g.rustaceanvim = {
     end,
     default_settings = {
       ["rust-analyzer"] = {
-        cargo = { allFeatures = true, loadOutDirsFromCheck = true, buildScripts = { enable = true } },
+        cargo = {
+          allFeatures = true,
+          loadOutDirsFromCheck = true,
+          buildScripts = { enable = true },
+          -- Isolate RA target artifacts to stop locking target/ against terminal commands
+          targetDir = true,
+          -- Avoid analyzing tests, benchmarks, and examples for internal indexing
+          allTargets = false,
+        },
+        -- Scope checks to current crate and skip extra targets when checks do run
+        check = {
+          command = "check",
+          allTargets = false,
+          workspace = false,
+        },
         files = {
           exclude = {
             ".direnv",
@@ -32,9 +46,18 @@ vim.g.rustaceanvim = {
           },
           watcher = "client",
         },
-        checkOnSave = true,
-        diagnostics = { enable = true },
+        -- Keep false if using bacon_ls or manual checks
+        checkOnSave = false,
+        diagnostics = {
+          enable = true,
+          experimental = { enable = false },
+        },
         procMacro = { enable = true },
+        -- Reduce AST traversal overhead during typing/navigation
+        inlayHints = {
+          lifetimeElisionHints = { enable = "never" },
+          expressionAdjustmentHints = { enable = "never" },
+        },
       },
     },
   },
