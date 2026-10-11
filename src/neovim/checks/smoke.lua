@@ -36,6 +36,7 @@ for _, mod in ipairs({
 	"trouble",
 	"mini.ai",
 	"nvim-treesitter",
+	"treesitter-context",
 	"nvim-treesitter-textobjects",
 	"persistence",
 	"schemastore",
@@ -74,7 +75,25 @@ end
 -- DAP adapters launched by store path rather than PATH lookup.
 check(vim.fn.executable(vim.g.neovix.lldb_dap) == 1, "executable vim.g.neovix.lldb_dap")
 
-for _, lang in ipairs({ "rust", "nix", "lua", "python", "go", "typescript", "markdown", "bash" }) do
+-- A sample of the allowlist in src/neovim/treesitter.nix, injections included.
+for _, lang in ipairs({
+	"rust",
+	"nix",
+	"lua",
+	"python",
+	"go",
+	"typescript",
+	"tsx",
+	"markdown",
+	"markdown_inline",
+	"bash",
+	"json",
+	"yaml",
+	"toml",
+	"vimdoc",
+	"regex",
+	"comment",
+}) do
 	check(
 		pcall(vim.treesitter.language.add, lang) and vim.treesitter.query.get(lang, "highlights") ~= nil,
 		"treesitter " .. lang
@@ -99,6 +118,50 @@ for name, body in pairs({
 	check(vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()] ~= nil, "highlight " .. name)
 end
 
+-- .vscode/launch.json (dap.lua): found upward from the buffer, JSONC with
+-- trailing commas, ${workspaceFolder} rebased, VS Code type names resolvable.
+do
+	local dap = require("dap")
+	local root = tmp .. "/proj"
+	vim.fn.mkdir(root .. "/.vscode", "p")
+	vim.fn.mkdir(root .. "/src", "p")
+	vim.fn.writefile({
+		"{",
+		"  // CodeLLDB style",
+		'  "configurations": [',
+		'    { "type": "lldb", "request": "launch", "name": "cargo",',
+		'      "cargo": { "args": ["build"] }, "cwd": "${workspaceFolder}", },',
+		'    { "type": "lldb-dap", "request": "launch", "name": "prebuilt",',
+		'      "program": "${workspaceFolder}/target/debug/x", },',
+		"  ],",
+		"}",
+	}, root .. "/.vscode/launch.json")
+	vim.fn.writefile({ "fn main() {}" }, root .. "/src/lib.rs")
+	vim.cmd.edit(root .. "/src/lib.rs")
+	local real = vim.uv.fs_realpath(root)
+	local ok, configs = pcall(dap.providers.configs["dap.launch.json"], vim.api.nvim_get_current_buf())
+	check(ok and #configs == 2, "launch.json configs (got " .. vim.inspect(configs) .. ")")
+	if ok and #configs == 2 then
+		check(configs[1].cwd == real, "launch.json ${workspaceFolder} cwd (got " .. tostring(configs[1].cwd) .. ")")
+		check(configs[2].program == real .. "/target/debug/x", "launch.json ${workspaceFolder} program")
+	end
+	for _, type in ipairs({ "lldb", "lldb-dap", "codelldb", "go", "python", "pwa-node" }) do
+		check(dap.adapters[type] ~= nil, "dap adapter " .. type)
+	end
+	check(dap.listeners.on_config["neovix.codelldb"] ~= nil, "dap codelldb cargo listener")
+end
+
+-- autocmds.lua follows the focused buffer's project root.
+do
+	local proj = tmp .. "/cwdproj"
+	vim.fn.mkdir(proj .. "/src", "p")
+	vim.fn.writefile({ "" }, proj .. "/Cargo.toml")
+	vim.fn.writefile({ "fn main() {}" }, proj .. "/src/main.rs")
+	vim.cmd.edit(proj .. "/src/main.rs")
+	local real = vim.uv.fs_realpath(proj)
+	check(vim.uv.fs_realpath(vim.fn.getcwd()) == real, "cwd follows buffer (got " .. vim.fn.getcwd() .. ")")
+end
+
 -- Optional features (src/neovim/package.nix): check whatever is enabled.
 local features = vim.g.neovix.features
 if features.codecompanion then
@@ -110,6 +173,12 @@ end
 if features.claudecode then
 	check(pcall(require, "claudecode"), "require claudecode")
 	check(vim.fn.exists(":ClaudeCode") == 2, "claudecode commands")
+	for _, m in ipairs({ { "n", "<C-,>" }, { "x", "<C-,>" }, { "n", "<leader>ap" }, { "n", "<leader>aD" } }) do
+		check(vim.fn.maparg(m[2], m[1]) ~= "", "claudecode map " .. m[1] .. " " .. m[2])
+	end
+	-- vim.tbl_get: an uncaught error here would hang the check instead of failing it.
+	check(type(vim.tbl_get(Snacks.config, "picker", "actions", "claude_add")) == "function", "snacks picker claude_add")
+	check(#vim.api.nvim_get_autocmds({ group = "neovix_claudecode_tree" }) > 0, "claudecode neo-tree <leader>as")
 end
 
 check(vim.fn.exists(":TmuxNavigateLeft") == 2, "vim-tmux-navigator commands")
