@@ -23,8 +23,6 @@ for _, mod in ipairs({
 	"lspconfig",
 	"rustaceanvim",
 	"crates",
-	"codecompanion",
-	"codecompanion._extensions.history",
 	"render-markdown",
 	"dap",
 	"dap-view",
@@ -67,7 +65,6 @@ for _, bin in ipairs({
 	"prettier",
 	"marksman",
 	"npx",
-	"claude-agent-acp",
 	"go",
 	"swiftformat",
 	"swiftlint",
@@ -98,6 +95,19 @@ for name, body in pairs({
 	local ok, err = pcall(vim.cmd.edit, path)
 	check(ok, "open " .. name .. ": " .. tostring(err))
 	check(vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()] ~= nil, "highlight " .. name)
+end
+
+-- Optional features (src/neovim/package.nix): check whatever is enabled.
+local features = vim.g.neovix.features
+if features.codecompanion then
+	for _, mod in ipairs({ "codecompanion", "codecompanion._extensions.history", "img-clip" }) do
+		check(pcall(require, mod), "require " .. mod)
+	end
+	check(vim.fn.executable("claude-agent-acp") == 1, "executable claude-agent-acp")
+end
+if features.claudecode then
+	check(pcall(require, "claudecode"), "require claudecode")
+	check(vim.fn.exists(":ClaudeCode") == 2, "claudecode commands")
 end
 
 check(vim.fn.exists(":TmuxNavigateLeft") == 2, "vim-tmux-navigator commands")

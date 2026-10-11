@@ -5,16 +5,27 @@
   wrapNeovimUnstable,
   python3,
   vimPlugins,
+  # Optional features, toggled with `neovix.override { features = { ... }; }`.
+  features ? {},
 }: let
+  features' =
+    {
+      codecompanion = false; # CodeCompanion chat (Claude Code over ACP, Gemini inline)
+      claudecode = true; # claudecode.nvim: Claude Code CLI in a split, IDE integration
+    }
+    // features;
+
   # Plain `import` rather than callPackage: these return categorised attrsets
   # whose values are flattened below, so callPackage's `override` attrs must not
   # leak in.
   plugins = import ./plugins.nix {
     inherit lib vimPlugins;
     inherit (pkgs) stdenv callPackage;
+    features = features';
   };
   toolchains = import ./toolchains.nix {
     inherit lib pkgs;
+    features = features';
     inherit (pkgs) stdenv callPackage runCommand writeShellScriptBin;
   };
   treesitter = import ./treesitter.nix {inherit vimPlugins;};
@@ -44,6 +55,7 @@
       config = config_dir,
       store_config = store_config,
       debugpy_python = "${debugpyPython}/bin/python",
+      features = ${lib.generators.toLua {} features'},
     }
 
     local user_config = vim.fn.stdpath("config")
@@ -77,6 +89,7 @@ in
       (old.passthru or {})
       // {
         inherit plugins toolchains treesitter config;
+        features = features';
       };
     meta =
       (old.meta or {})

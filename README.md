@@ -68,7 +68,8 @@ config/                      # the Neovim config (Lua)
 | `markdown.lua`        | `leaf` runner, render-markdown, markdown-preview                                                        |
 | `swift.lua`           | sourcekit-lsp, SwiftFormat / swift-format, SwiftLint, SwiftPM and xcodebuild.nvim — see [docs/swift.md](docs/swift.md) |
 | `vim_tmux_navigator.lua` | `<C-h/j/k/l>` across Neovim splits and tmux panes                                                  |
-| `ai.lua`              | CodeCompanion (Claude Code chat over ACP, Gemini 3.8 Flash inline, MCP servers, skills, rules), img-clip |
+| `codecompanion.lua`   | CodeCompanion (Claude Code chat over ACP, Gemini 3.8 Flash inline, MCP servers, skills, rules), img-clip. Off by default (`features.codecompanion`) |
+| `claudecode.lua`      | claudecode.nvim: Claude Code CLI in a split with IDE integration (diffs, selections, @-mentions). On by default (`features.claudecode`) |
 | `dap.lua`             | nvim-dap + dap-view / dap-ui, adapters for C/C++/Zig/Rust, Go, Python, JS/TS, Lua                       |
 | `testing.lua`         | neotest (Rust, Python, Zig)                                                                             |
 
@@ -161,6 +162,14 @@ must allow it:
 nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "packer" ];
 ```
 
+Optional features are toggled with `override` (defaults in `src/neovim/package.nix`):
+`claudecode` (claudecode.nvim, on) and `codecompanion` (CodeCompanion and its
+ACP bridge, off). A disabled feature's plugins and tools aren't built at all.
+
+```nix
+pkgs.neovix.override { features = { codecompanion = true; }; }
+```
+
 Supported systems: `x86_64-linux`, `aarch64-linux`, `aarch64-darwin`.
 nixpkgs-unstable no longer supports `x86_64-darwin`.
 
@@ -185,7 +194,9 @@ The leader is `<space>`. The layout follows LazyVim, so the usual keys work;
 | `<leader>gad` `<leader>gah` `<leader>gap` `<leader>gaw` | GitHub Actions: dispatch, history, by PR, watch                 |
 | `<leader>xx` `<leader>xt`                              | diagnostics, todos (trouble)                                    |
 | `<leader>sr`                                           | search and replace (grug-far)                                   |
-| `<leader>a` `<leader>o` `ga` (visual)                  | CodeCompanion: chat, actions, add selection                     |
+| `<leader>ac` `<leader>af` `<leader>ar` `<leader>aC`    | Claude Code: toggle, focus, resume, continue                    |
+| `<leader>ab` `<leader>as` (visual) `<leader>aa` `<leader>ad` | Claude Code: add buffer, send selection, accept / deny diff |
+| `<leader>a` `<leader>o` `ga` (visual)                  | CodeCompanion (when enabled): chat, actions, add selection      |
 | `<leader>md` / `<leader>mds`                           | leaf full screen / watch split                                  |
 | `<leader>db` `<leader>dc` `<leader>du`                 | breakpoint, continue, dap-view                                  |
 | `<leader>tt` `<leader>tr` `<leader>ts`                 | run tests, nearest test, summary                                |
