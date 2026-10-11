@@ -33,6 +33,13 @@ local function leaf(opts)
 
   vim.cmd("startinsert")
   map("t", "<Esc>", "<C-\\><C-n>:bd!<CR>", { buffer = term_buf, silent = true })
+  -- Terminal mode sends every key to leaf, so the navigator's normal-mode
+  -- maps never fire; mirror them here, and resume leaf when focus returns.
+  -- stylua: ignore start
+  map("t", "<C-h>", function() vim.cmd("TmuxNavigateLeft") end, { buffer = term_buf, desc = "Go to Left Window/Pane" })
+  map("t", "<C-l>", function() vim.cmd("TmuxNavigateRight") end, { buffer = term_buf, desc = "Go to Right Window/Pane" })
+  -- stylua: ignore end
+  vim.api.nvim_create_autocmd("BufEnter", { buffer = term_buf, command = "startinsert" })
 end
 
 -- stylua: ignore start
