@@ -11,6 +11,11 @@ vim.g.rustaceanvim = {
       -- Grouped code actions replace the plain <leader>ca in Rust buffers.
       vim.keymap.set("n", "<leader>ca", function() vim.cmd.RustLsp("codeAction") end, { buffer = bufnr, desc = "Rust Code Action" })
       vim.keymap.set("n", "<leader>dr", function() vim.cmd.RustLsp("debuggables") end, { buffer = bufnr, desc = "Rust Debuggables" })
+      vim.keymap.set("n", "<leader>dR", function()
+        -- Args become the binary's argv; whitespace-split, no shell quoting.
+        local args = vim.split(vim.fn.input("Args: "), "%s+", { trimempty = true })
+        vim.cmd.RustLsp({ "debuggables", unpack(args) })
+      end, { buffer = bufnr, desc = "Rust Debuggables (args)" })
       vim.keymap.set("n", "<leader>ce", function() vim.cmd.RustLsp("explainError") end, { buffer = bufnr, desc = "Explain Error" })
       vim.keymap.set("n", "<leader>cm", function() vim.cmd.RustLsp("expandMacro") end, { buffer = bufnr, desc = "Expand Macro" })
       -- stylua: ignore end
