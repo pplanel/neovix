@@ -17,6 +17,28 @@ local function startup_footer()
   }
 end
 
+-- <a-a> in any picker @-mentions the selected (or current) files to Claude,
+-- starting it if needed. Modal pickers keep focus in the input, so
+-- :ClaudeCodeTreeAdd can't reach them.
+local claude_picker = vim.g.neovix.features.claudecode
+    and {
+      actions = {
+        claude_add = function(picker)
+          local items = picker:selected({ fallback = true })
+          picker:close()
+          for _, item in ipairs(items) do
+            local path = Snacks.picker.util.path(item)
+            if path then require("claudecode").send_at_mention(path, nil, nil, "snacks_picker") end
+          end
+        end,
+      },
+      win = {
+        input = { keys = { ["<a-a>"] = { "claude_add", mode = { "n", "i" }, desc = "Add to Claude" } } },
+        list = { keys = { ["<a-a>"] = { "claude_add", desc = "Add to Claude" } } },
+      },
+    }
+  or {}
+
 require("snacks").setup({
   bigfile = { enabled = true },
   quickfile = { enabled = true },
@@ -28,7 +50,7 @@ require("snacks").setup({
   scroll = { enabled = false },
   statuscolumn = { enabled = true },
   words = { enabled = true },
-  picker = { enabled = true, ui_select = true },
+  picker = vim.tbl_deep_extend("force", { enabled = true, ui_select = true }, claude_picker),
   -- Image rendering is handled by image.nvim (see below); Snacks' would conflict.
   image = { enabled = false },
   dashboard = {
@@ -227,6 +249,11 @@ require("lualine").setup({
           return #names > 0 and (icons.ui.gear .. " " .. table.concat(names, " ")) or ""
         end,
         color = "Comment",
+      },
+      {
+        function() return icons.ui.claude .. " claude" end,
+        cond = function() return package.loaded.claudecode ~= nil and require("claudecode").is_claude_connected() end,
+        color = "Special",
       },
       Snacks.profiler.status(),
     },

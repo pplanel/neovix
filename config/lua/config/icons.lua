@@ -29,6 +29,7 @@ M.ui = {
   lock = "\u{f023}",
   gear = "\u{f013}",
   bolt = "\u{f0e7}",
+  claude = "\u{f06a9}", -- robot
   sep_left = "\u{e0b6}",
   sep_right = "\u{e0b4}",
 }
