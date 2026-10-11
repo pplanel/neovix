@@ -7,7 +7,24 @@ local map = vim.keymap.set
 require("claudecode").setup({
   terminal_cmd = os.getenv("CLAUDE_CODE_EXECUTABLE"),
   log_level = "warn",
-  terminal = { split_side = "right", split_width_percentage = 0.4 },
+  terminal = {
+    split_side = "right",
+    split_width_percentage = 0.4,
+    -- In terminal mode every key goes to the CLI, so the normal-mode
+    -- navigator maps never fire. Only h/l: Claude uses <C-j> (newline) and
+    -- <C-k> (kill line). Snacks re-enters insert mode when the window is
+    -- focused again. Snacks reads a string rhs as an action name (and drops
+    -- it when there's no such action), so these must be functions.
+    snacks_win_opts = {
+      keys = {
+        nav_h = { "<C-h>", function() vim.cmd("TmuxNavigateLeft") end, mode = "t", desc = "Go to Left Window/Pane" },
+        nav_l = { "<C-l>", function() vim.cmd("TmuxNavigateRight") end, mode = "t", desc = "Go to Right Window/Pane" },
+        -- Normal mode for scrolling, without the first <Esc> of snacks'
+        -- double-Esc reaching Claude and interrupting it.
+        term_normal_q = { "<C-q>", function() vim.cmd("stopinsert") end, mode = "t", desc = "Normal Mode (scroll)" },
+      },
+    },
+  },
 })
 
 require("which-key").add({ { "<leader>a", group = "ai" } })
