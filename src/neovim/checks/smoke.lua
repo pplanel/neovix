@@ -71,6 +71,8 @@ for _, bin in ipairs({
 }) do
 	check(vim.fn.executable(bin) == 1, "executable " .. bin)
 end
+-- DAP adapters launched by store path rather than PATH lookup.
+check(vim.fn.executable(vim.g.neovix.lldb_dap) == 1, "executable vim.g.neovix.lldb_dap")
 
 for _, lang in ipairs({ "rust", "nix", "lua", "python", "go", "typescript", "markdown", "bash" }) do
 	check(

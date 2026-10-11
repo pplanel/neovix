@@ -70,7 +70,6 @@ in
       bacon
       (callPackage ./pkgs/bacon-ls.nix {})
       lldb
-      lldb-dap
     ];
 
     go = [

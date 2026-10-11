@@ -1,6 +1,8 @@
 -- rustaceanvim owns rust-analyzer (don't vim.lsp.enable it). It reads this
 -- global lazily when the first Rust buffer opens. bacon_ls is enabled in lsp.lua.
 vim.g.rustaceanvim = {
+  -- Same pinned lldb-dap as dap.lua instead of rustaceanvim's PATH lookup.
+  dap = { adapter = { type = "executable", command = vim.g.neovix.lldb_dap, name = "lldb" } },
   server = {
     -- Match bacon_ls (UTF-16 only); see lsp.lua.
     capabilities = { general = { positionEncodings = { "utf-16" } } },
