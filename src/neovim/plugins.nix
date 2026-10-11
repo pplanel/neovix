@@ -58,6 +58,7 @@ with vimPlugins; {
   ];
 
   treesitter = [
+    nvim-treesitter-context
     nvim-treesitter-textobjects
     nvim-ts-autotag
   ];

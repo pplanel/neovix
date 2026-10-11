@@ -17,6 +17,25 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- ── context: pin the enclosing class/impl/function signatures at the top ────
+-- Per-language queries ship with the plugin, so this covers every grammar in
+-- src/neovim/treesitter.nix. [x jumps up to the context line.
+require("treesitter-context").setup({
+  max_lines = 3, -- outermost first: class › method › block
+  multiline_threshold = 1, -- one line per signature
+  trim_scope = "inner", -- past max_lines, keep the outer (class) lines
+  mode = "topline",
+})
+vim.keymap.set("n", "[x", function() require("treesitter-context").go_to_context(vim.v.count1) end, {
+  desc = "Go to Context",
+  silent = true,
+})
+Snacks.toggle({
+  name = "Treesitter Context",
+  get = function() return require("treesitter-context").enabled() end,
+  set = function(on) require("treesitter-context")[on and "enable" or "disable"]() end,
+}):map("<leader>ut")
+
 -- ── textobjects ─────────────────────────────────────────────────────────────
 require("nvim-treesitter-textobjects").setup({
   move = { set_jumps = true },
