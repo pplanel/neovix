@@ -59,6 +59,28 @@ map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 map("v", "<", "<gv")
 map("v", ">", ">gv")
 
+-- Yank selected lines as a fenced block headed by "path:start-end"
+map("x", "<leader>y", function()
+  local first, last = vim.fn.line("v"), vim.fn.line(".")
+  if first > last then
+    first, last = last, first
+  end
+  local file = vim.api.nvim_buf_get_name(0)
+  local root = Snacks.git.get_root(file)
+  local path = root and vim.fs.relpath(vim.fs.dirname(root), file) or vim.fn.fnamemodify(file, ":~:.")
+  local range = first == last and tostring(first) or first .. "-" .. last
+  local cs = vim.bo.commentstring ~= "" and vim.bo.commentstring or "%s"
+  local text = table.concat({
+    "```" .. vim.bo.filetype,
+    cs:gsub("%%s", path .. ":" .. range, 1),
+    table.concat(vim.api.nvim_buf_get_lines(0, first - 1, last, false), "\n"),
+    "```",
+  }, "\n")
+  vim.fn.setreg("+", text)
+  vim.api.nvim_feedkeys(vim.keycode("<esc>"), "n", false)
+  vim.notify(("Yanked %s:%s"):format(path, range))
+end, { desc = "Yank with File Reference" })
+
 -- Comments above/below
 map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
 map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
