@@ -11,6 +11,7 @@
   lib,
   stdenv,
   pkgs,
+  features,
   callPackage,
   runCommand,
   writeShellScriptBin,
@@ -136,11 +137,11 @@ in
       ];
 
     ai =
-      [
-        ast-grep
-        claudeAgentAcp
-      ]
-      ++ lib.optionals stdenv.hostPlatform.isDarwin [pngpaste];
+      [ast-grep]
+      ++ lib.optionals features.codecompanion (
+        [claudeAgentAcp]
+        ++ lib.optionals stdenv.hostPlatform.isDarwin [pngpaste] # img-clip
+      );
 
     media = [
       chafa

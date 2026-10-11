@@ -6,6 +6,7 @@
   stdenv,
   callPackage,
   vimPlugins,
+  features,
 }:
 with vimPlugins; {
   ui = [
@@ -29,6 +30,7 @@ with vimPlugins; {
     snacks-nvim
     telescope-nvim
     telescope-fzf-native-nvim
+    plenary-nvim
     trouble-nvim
     todo-comments-nvim
     zen-mode-nvim
@@ -80,11 +82,15 @@ with vimPlugins; {
     (callPackage ./pkgs/xcodebuild-nvim.nix {})
   ];
 
-  ai = [
+  # Gated by `features` in package.nix.
+  codecompanion = lib.optionals features.codecompanion [
     codecompanion-nvim
     codecompanion-history-nvim
-    plenary-nvim
     img-clip-nvim
+  ];
+
+  claudecode = lib.optionals features.claudecode [
+    claudecode-nvim
   ];
 
   debug = [

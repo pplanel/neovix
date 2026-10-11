@@ -37,8 +37,11 @@ require("config.autocmds")
 
 -- 2. Deferred: completion and tools, right after the UI is up. Completion
 --    goes first so CodeCompanion finds blink.cmp configured when it registers
---    its chat source.
-local deferred = { "plugins.completion", "plugins.telescope", "plugins.ai", "plugins.dap", "plugins.testing" }
+--    its chat source. Optional features are toggled in src/neovim/package.nix.
+local features = vim.g.neovix.features
+local deferred = { "plugins.completion", "plugins.telescope", "plugins.dap", "plugins.testing" }
+if features.codecompanion then table.insert(deferred, 3, "plugins.codecompanion") end
+if features.claudecode then table.insert(deferred, 3, "plugins.claudecode") end
 
 if #vim.api.nvim_list_uis() == 0 then
   -- Headless (scripts, `nix flake check`): no UI to wait for, load everything.

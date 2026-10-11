@@ -32,7 +32,9 @@ nix develop                                 # sets NEOVIX_CONFIG=$PWD/config; th
 
 **The Lua config (`config/`).** "Loading" a plugin just means calling its `setup()`. `config/init.lua` loads modules in two stages:
 1. Eager: modules that shape the first frame or must exist before FileType autocmds for files given on the command line (theme, ui, editor, lsp, format, …). Order matters: `plugins.swift` comes after `plugins.format` because it extends conform/nvim-lint.
-2. Deferred to `UIEnter`: completion, telescope, ai, dap, testing. Completion goes first so CodeCompanion finds blink.cmp configured. In headless mode everything loads immediately.
+2. Deferred to `UIEnter`: completion, telescope, the AI modules, dap, testing. Completion goes first so CodeCompanion finds blink.cmp configured. In headless mode everything loads immediately.
+
+**Optional features.** `package.nix` takes `features` (defaults: `claudecode = true`, `codecompanion = false`). A feature gates its plugins in `plugins.nix`, its tools in `toolchains.nix`, its module in `init.lua` (via `vim.g.neovix.features`) and its checks in `smoke.lua`.
 
 Each module is loaded through `pcall`, and a failure surfaces as a notification rather than an abort. A new `config/lua/plugins/*.lua` file does nothing until it's added to one of the lists in `init.lua`.
 
