@@ -1,4 +1,4 @@
--- Debug adapters are Nix-provided: lldb-dap (C/C++/Zig; rustaceanvim picks it
+-- Debug adapters are Nix-provided: CodeLLDB (C/C++/Zig; rustaceanvim picks it
 -- up for Rust), delve, debugpy, js-debug-adapter, and osv for Neovim Lua.
 -- Swift is the exception: it needs the system toolchain's lldb-dap.
 local dap = require("dap")
@@ -17,12 +17,15 @@ for name, sign in pairs({
 end
 
 -- ── Adapters ────────────────────────────────────────────────────────────────
-dap.adapters.lldb = require("config.lldb") -- pinned lldb-dap; see config/lldb.lua
+-- CodeLLDB for C/C++/Zig/Rust (see config/codelldb.lua). "lldb" is the type
+-- name CodeLLDB itself uses in VS Code launch.json files.
+dap.adapters.codelldb = require("config.codelldb")
+dap.adapters.lldb = dap.adapters.codelldb
 
 local lldb_launch = {
   {
     name = "Launch file",
-    type = "lldb",
+    type = "codelldb",
     request = "launch",
     program = function() return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file") end,
     cwd = "${workspaceFolder}",
@@ -30,7 +33,7 @@ local lldb_launch = {
   },
   {
     name = "Attach to process",
-    type = "lldb",
+    type = "codelldb",
     request = "attach",
     pid = require("dap.utils").pick_process,
     cwd = "${workspaceFolder}",
@@ -121,8 +124,7 @@ dap.configurations.lua = {
 -- ── .vscode/launch.json ─────────────────────────────────────────────────────
 -- nvim-dap offers launch.json entries on dap.continue(), dispatching on their
 -- `type`. Map the VS Code extension type names onto the adapters above.
-dap.adapters["lldb-dap"] = dap.adapters.lldb -- LLDB DAP extension
-dap.adapters.codelldb = dap.adapters.lldb -- CodeLLDB (whose own type, "lldb", is ours already)
+dap.adapters["lldb-dap"] = dap.adapters.codelldb -- LLDB DAP extension
 dap.adapters.go = dap.adapters.delve -- Go extension
 
 -- VS Code's JSONC allows trailing commas; vim.json only skips comments.
@@ -193,8 +195,6 @@ dap.listeners.on_config["neovix.codelldb"] = function(config)
     return config
   end
   config.program, config.cargo = program, nil
-  -- CodeLLDB's `terminal` option is lldb-dap's `runInTerminal`.
-  if config.terminal == "integrated" or config.terminal == "external" then config.runInTerminal = true end
   return config
 end
 

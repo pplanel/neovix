@@ -69,7 +69,7 @@ in
       rust-analyzer
       bacon
       (callPackage ./pkgs/bacon-ls.nix {})
-      lldb
+      (callPackage ./pkgs/codelldb.nix {}) # debug adapter for Rust/C/C++/Zig
     ];
 
     go = [

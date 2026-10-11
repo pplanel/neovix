@@ -1,15 +1,8 @@
 -- rustaceanvim owns rust-analyzer (don't vim.lsp.enable it). It reads this
 -- global lazily when the first Rust buffer opens. bacon_ls is enabled in lsp.lua.
 vim.g.rustaceanvim = {
-  -- Same pinned lldb-dap as dap.lua instead of rustaceanvim's PATH lookup.
-  dap = {
-    adapter = require("config.lldb"),
-    -- The DYLD_LIBRARY_PATH this adds (rustc's lib dir) also reaches lldb-dap's
-    -- runInTerminal launcher, which then loads rustc's libLLVM instead of its
-    -- own and dies in dyld ("Timed out ... runInTerminal launcher"). Only
-    -- binaries linking Rust dylibs at runtime need it.
-    add_dynamic_library_paths = false,
-  },
+  -- Same bundled CodeLLDB as dap.lua instead of rustaceanvim's PATH/Mason lookup.
+  dap = { adapter = require("config.codelldb") },
   server = {
     -- Match bacon_ls (UTF-16 only); see lsp.lua.
     capabilities = { general = { positionEncodings = { "utf-16" } } },

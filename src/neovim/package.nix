@@ -37,6 +37,7 @@
   };
 
   debugpyPython = python3.withPackages (ps: [ps.debugpy]);
+  codelldb = pkgs.callPackage ./pkgs/codelldb.nix {};
 
   # Bootstrap: pick the config dir, isolate from ~/.config/nvim, hand off to init.lua.
   # Set NEOVIX_CONFIG to a checkout's config/ to iterate on Lua without rebuilding.
@@ -55,7 +56,8 @@
       config = config_dir,
       store_config = store_config,
       debugpy_python = "${debugpyPython}/bin/python",
-      lldb_dap = "${pkgs.lldb}/bin/lldb-dap",
+      codelldb = "${codelldb}/${codelldb.adapter}",
+      liblldb = "${codelldb}/${codelldb.liblldb}",
       features = ${lib.generators.toLua {} features'},
     }
 

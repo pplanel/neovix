@@ -52,7 +52,7 @@ for _, bin in ipairs({
 	"alejandra",
 	"rust-analyzer",
 	"bacon-ls",
-	"lldb-dap",
+	"codelldb",
 	"lua-language-server",
 	"stylua",
 	"gopls",
@@ -73,7 +73,8 @@ for _, bin in ipairs({
 	check(vim.fn.executable(bin) == 1, "executable " .. bin)
 end
 -- DAP adapters launched by store path rather than PATH lookup.
-check(vim.fn.executable(vim.g.neovix.lldb_dap) == 1, "executable vim.g.neovix.lldb_dap")
+check(vim.fn.executable(vim.g.neovix.codelldb) == 1, "executable vim.g.neovix.codelldb")
+check(vim.uv.fs_stat(vim.g.neovix.liblldb) ~= nil, "vim.g.neovix.liblldb exists")
 
 -- A sample of the allowlist in src/neovim/treesitter.nix, injections included.
 for _, lang in ipairs({
@@ -149,12 +150,12 @@ do
 		check(dap.adapters[type] ~= nil, "dap adapter " .. type)
 	end
 	check(dap.listeners.on_config["neovix.codelldb"] ~= nil, "dap codelldb cargo listener")
-	-- config/lldb.lua: dev shells' DEVELOPER_DIR/SDKROOT must not reach lldb-dap.
-	local lldb = dap.adapters.lldb or {}
+	-- config/codelldb.lua: dev shells' DEVELOPER_DIR/SDKROOT must not reach CodeLLDB.
+	local lldb = vim.tbl_get(dap.adapters, "codelldb", "executable") or {}
 	check(
 		vim.list_contains(lldb.args or {}, "DEVELOPER_DIR")
-			and vim.list_contains(lldb.args or {}, vim.g.neovix.lldb_dap),
-		"lldb adapter strips DEVELOPER_DIR (got " .. vim.inspect(lldb) .. ")"
+			and vim.list_contains(lldb.args or {}, vim.g.neovix.codelldb),
+		"codelldb adapter strips DEVELOPER_DIR (got " .. vim.inspect(lldb) .. ")"
 	)
 end
 
