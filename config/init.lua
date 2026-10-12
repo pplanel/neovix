@@ -42,6 +42,7 @@ local features = vim.g.neovix.features
 local deferred = { "plugins.completion", "plugins.telescope", "plugins.dap", "plugins.testing" }
 if features.codecompanion then table.insert(deferred, 3, "plugins.codecompanion") end
 if features.claudecode then table.insert(deferred, 3, "plugins.claudecode") end
+if features.groundcontrol then table.insert(deferred, "plugins.groundcontrol") end
 
 if #vim.api.nvim_list_uis() == 0 then
   -- Headless (scripts, `nix flake check`): no UI to wait for, load everything.

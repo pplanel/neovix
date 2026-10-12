@@ -7,11 +7,14 @@
   vimPlugins,
   # Optional features, toggled with `neovix.override { features = { ... }; }`.
   features ? {},
+  # Plugins from outside nixpkgs and this repo (e.g. a private one), added to the packpath.
+  extraPlugins ? [],
 }: let
   features' =
     {
       codecompanion = false; # CodeCompanion chat (Claude Code over ACP, Gemini inline)
       claudecode = true; # claudecode.nvim: Claude Code CLI in a split, IDE integration
+      groundcontrol = false; # GroundControl dashboard; its plugin must come through extraPlugins
     }
     // features;
 
@@ -72,7 +75,7 @@
 in
   (wrapNeovimUnstable neovim-unwrapped {
     inherit luaRcContent;
-    plugins = lib.flatten (lib.attrValues plugins) ++ [treesitter];
+    plugins = lib.flatten (lib.attrValues plugins) ++ [treesitter] ++ extraPlugins;
     extraLuaPackages = ps: [ps.jsregexp]; # LuaSnip transformations
     withPython3 = false;
     withRuby = false;
