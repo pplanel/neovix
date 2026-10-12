@@ -188,6 +188,14 @@ if features.claudecode then
 	check(type(vim.tbl_get(Snacks.config, "picker", "actions", "claude_add")) == "function", "snacks picker claude_add")
 	check(#vim.api.nvim_get_autocmds({ group = "neovix_claudecode_tree" }) > 0, "claudecode neo-tree <leader>as")
 end
+if features.groundcontrol then
+	check(pcall(require, "groundcontrol"), "require groundcontrol")
+	check(vim.fn.exists(":GroundControl") == 2, "groundcontrol command")
+	check(vim.fn.maparg("<leader>G", "n") ~= "", "groundcontrol map <leader>G")
+	for _, bin in ipairs({ "groundcontrol-linear", "linear" }) do
+		check(vim.fn.executable(bin) == 1, "executable " .. bin)
+	end
+end
 
 check(vim.fn.exists(":TmuxNavigateLeft") == 2, "vim-tmux-navigator commands")
 check(vim.fn.maparg("<c-h>", "n"):find("TmuxNavigateLeft") ~= nil, "<c-h> mapped to tmux navigator")

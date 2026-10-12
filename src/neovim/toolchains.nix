@@ -29,6 +29,13 @@
     '';
   };
 
+  # GroundControl reads Linear through `linear api` (query on stdin, key from the
+  # Keychain via `linear auth login`); the full `linear` comes along for :terminal.
+  linearCli = callPackage ./pkgs/linear-cli.nix {};
+  groundcontrolLinear = writeShellScriptBin "groundcontrol-linear" ''
+    exec ${linearCli}/bin/linear api "$@"
+  '';
+
   # Only coreutils' stdbuf: the full coreutils would shadow the BSD tools.
   stdbufOnly = runCommand "stdbuf" {} ''
     mkdir -p $out/bin
@@ -154,6 +161,8 @@ in
     ];
 
     wrappers = lib.attrValues wrappers;
+
+    groundcontrol = lib.optionals features.groundcontrol [linearCli groundcontrolLinear];
 
     # Appended to PATH: fallbacks only (see header).
     runtimes = [
