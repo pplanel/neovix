@@ -192,6 +192,9 @@ if features.groundcontrol then
 	check(pcall(require, "groundcontrol"), "require groundcontrol")
 	check(vim.fn.exists(":GroundControl") == 2, "groundcontrol command")
 	check(vim.fn.maparg("<leader>G", "n") ~= "", "groundcontrol map <leader>G")
+	for _, bin in ipairs({ "groundcontrol-linear", "linear" }) do
+		check(vim.fn.executable(bin) == 1, "executable " .. bin)
+	end
 end
 
 check(vim.fn.exists(":TmuxNavigateLeft") == 2, "vim-tmux-navigator commands")
