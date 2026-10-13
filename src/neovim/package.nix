@@ -12,8 +12,8 @@
 }: let
   features' =
     {
-      codecompanion = false; # CodeCompanion chat (Claude Code over ACP, Gemini inline)
-      claudecode = true; # claudecode.nvim: Claude Code CLI in a split, IDE integration
+      codecompanion = true; # CodeCompanion chat (Claude Code over ACP, Gemini inline)
+      claudecode = false; # claudecode.nvim: Claude Code CLI in a split, IDE integration
       groundcontrol = false; # GroundControl dashboard; its plugin must come through extraPlugins
     }
     // features;

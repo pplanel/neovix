@@ -51,7 +51,7 @@ require("codecompanion").setup({
   -- Chat runs Claude Code over ACP; ACP adapters are chat-only, so inline and cmd stay on Gemini.
   interactions = {
     chat = {
-      adapter = "claude_code",
+      adapter = "gemini",
       tools = {
         opts = {
           -- Every chat starts with the developer toolset; no need to type @{developer}.
