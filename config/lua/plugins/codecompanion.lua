@@ -46,12 +46,69 @@ require("codecompanion").setup({
           env = { GEMINI_API_TOKEN = function() return os.getenv("GEMINI_API_TOKEN") end },
         })
       end,
+      pi = function()
+        local helpers = require("codecompanion.adapters.acp.helpers")
+
+        ---@class CodeCompanion.ACPAdapter.Cagent: CodeCompanion.ACPAdapter
+        return {
+          name = "cagent",
+          formatted_name = "Cagent",
+          type = "acp",
+          roles = {
+            llm = "assistant",
+            user = "user",
+          },
+          opts = {
+            vision = true,
+          },
+          commands = {
+            default = {
+              "npx",
+              "-y",
+              "pi-acp",
+            },
+          },
+          defaults = {
+            mcpServers = {},
+            timeout = 20000, -- 20 seconds
+          },
+          parameters = {
+            protocolVersion = 1,
+            clientCapabilities = {
+              fs = { readTextFile = true, writeTextFile = true },
+            },
+            clientInfo = {
+              name = "CodeCompanion.nvim",
+              version = "1.0.0",
+            },
+          },
+          handlers = {
+            ---@param self CodeCompanion.ACPAdapter
+            ---@return boolean
+            setup = function(self) return true end,
+
+            ---@param self CodeCompanion.ACPAdapter
+            ---@param messages table
+            ---@param capabilities table
+            ---@return table
+            form_messages = function(self, messages, capabilities)
+              return helpers.form_messages(self, messages, capabilities)
+            end,
+
+            ---Function to run when the request has completed. Useful to catch errors
+            ---@param self CodeCompanion.ACPAdapter
+            ---@param code number
+            ---@return nil
+            on_exit = function(self, code) end,
+          },
+        }
+      end,
     },
   },
   -- Chat runs Claude Code over ACP; ACP adapters are chat-only, so inline and cmd stay on Gemini.
   interactions = {
     chat = {
-      adapter = "gemini",
+      adapter = "pi",
       tools = {
         opts = {
           -- Every chat starts with the developer toolset; no need to type @{developer}.
