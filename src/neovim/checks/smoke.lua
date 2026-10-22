@@ -150,6 +150,15 @@ do
 		check(dap.adapters[type] ~= nil, "dap adapter " .. type)
 	end
 	check(dap.listeners.on_config["neovix.codelldb"] ~= nil, "dap codelldb cargo listener")
+	-- delve spawns `dlv dap`, but connects for mode = "remote" attaches (also via the `go` alias).
+	local spawned, remote
+	dap.adapters.go(function(a) spawned = a end, { request = "launch" })
+	dap.adapters.go(function(a) remote = a end, { request = "attach", mode = "remote", port = "38697" })
+	check(spawned and spawned.executable and spawned.executable.command == "dlv", "delve adapter spawns dlv")
+	check(
+		remote and remote.host == "127.0.0.1" and remote.port == 38697 and not remote.executable,
+		"delve remote attach connects (got " .. vim.inspect(remote) .. ")"
+	)
 	-- config/codelldb.lua: dev shells' DEVELOPER_DIR/SDKROOT must not reach CodeLLDB.
 	local lldb = vim.tbl_get(dap.adapters, "codelldb", "executable") or {}
 	check(

@@ -43,11 +43,35 @@ dap.configurations.c = lldb_launch
 dap.configurations.cpp = lldb_launch
 dap.configurations.zig = lldb_launch
 
-dap.adapters.delve = {
-  type = "server",
-  port = "${port}",
-  executable = { command = "dlv", args = { "dap", "-l", "127.0.0.1:${port}" } },
-}
+-- nvim-dap substitutes launch.json's "${command:pickProcess}" with gsub, so the
+-- picked pid arrives as a string, and delve only accepts an int processId.
+local function delve_enrich(config, on_config)
+  if type(config.processId) == "string" then
+    config = vim.deepcopy(config)
+    config.processId = tonumber(config.processId) or config.processId
+  end
+  on_config(config)
+end
+
+-- Spawn `dlv dap` ourselves, except for `mode = "remote"` attaches (a config or
+-- launch.json entry with host/port), which connect to a running `dlv --headless`.
+dap.adapters.delve = function(callback, config)
+  if config.request == "attach" and config.mode == "remote" then
+    callback({
+      type = "server",
+      host = config.host or "127.0.0.1",
+      port = tonumber(config.port),
+      enrich_config = delve_enrich,
+    })
+  else
+    callback({
+      type = "server",
+      port = "${port}",
+      executable = { command = "dlv", args = { "dap", "-l", "127.0.0.1:${port}" } },
+      enrich_config = delve_enrich,
+    })
+  end
+end
 dap.configurations.go = {
   { type = "delve", name = "Debug", request = "launch", program = "${file}" },
   {
@@ -58,6 +82,17 @@ dap.configurations.go = {
     program = "./${relativeFileDirname}",
   },
   { type = "delve", name = "Debug package", request = "launch", program = "${fileDirname}" },
+  -- For TUIs: run `dlv debug --headless --continue --accept-multiclient --listen=127.0.0.1:<port>`
+  -- in the terminal that should own the program, then attach here.
+  {
+    type = "delve",
+    name = "Attach to headless dlv",
+    request = "attach",
+    mode = "remote",
+    port = function()
+      return tonumber(vim.fn.input("dlv port: ", "38697"))
+    end,
+  },
 }
 
 -- debugpy lives in a dedicated Nix-built interpreter, independent of any venv.
