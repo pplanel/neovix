@@ -105,6 +105,13 @@ require("codecompanion").setup({
       end,
     },
   },
+  dispplay = {
+    chat = {
+      window = {
+        pertab = true,
+      },
+    },
+  },
   -- Chat runs Claude Code over ACP; ACP adapters are chat-only, so inline and cmd stay on Gemini.
   interactions = {
     chat = {

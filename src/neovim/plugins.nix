@@ -85,7 +85,7 @@ with vimPlugins; {
 
   # Gated by `features` in package.nix.
   codecompanion = lib.optionals features.codecompanion [
-    codecompanion-nvim
+    (callPackage ./pkgs/codecompanion-pack-nvim.nix {})
     codecompanion-history-nvim
     img-clip-nvim
   ];
