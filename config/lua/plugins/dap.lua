@@ -89,9 +89,7 @@ dap.configurations.go = {
     name = "Attach to headless dlv",
     request = "attach",
     mode = "remote",
-    port = function()
-      return tonumber(vim.fn.input("dlv port: ", "38697"))
-    end,
+    port = function() return tonumber(vim.fn.input("dlv port: ", "38697")) end,
   },
 }
 

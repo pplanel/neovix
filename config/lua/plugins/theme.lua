@@ -2,6 +2,18 @@
 -- default. setup() must run before the colorscheme so the style takes effect.
 require("onedark").setup({ style = "deep" })
 
+-- Kanagawa: plugin/Snacks highlights from the author's PR (config/kanagawa_highlights.lua),
+-- applied through `overrides` because the plugin lives in the read-only Nix store. The
+-- dashboard header is then repainted yellow (the PR makes it red). Like onedark, setup()
+-- must precede the colorscheme.
+require("kanagawa").setup({
+  overrides = function(colors)
+    local hl = require("config.kanagawa_highlights").setup(colors)
+    hl.SnacksDashboardHeader = { fg = colors.theme.syn.identifier, bold = true }
+    return hl
+  end,
+})
+
 -- The last colorscheme picked (<leader>uC / <leader>FC) is saved outside the
 -- Nix store and restored here, so switching themes needs no rebuild. OneDark
 -- is the fallback when nothing is saved or the saved scheme is gone.
